@@ -192,7 +192,7 @@ void ACharacter_Y::Interactive()
 		if (HitRet.Actor->Implements<UInteractive_Interface>())//是否实现了接口
 		{
 			auto* Interactive_ = Cast<IInteractive_Interface>(HitRet.Actor);
-			Interactive_->Interactive_Implementation();
+			Interactive_->Execute_Interactive(HitRet.Actor.Get());
 
 		}
 		

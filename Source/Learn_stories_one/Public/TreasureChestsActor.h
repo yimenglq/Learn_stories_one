@@ -25,9 +25,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 protected:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* StaticMeshCompBase;//µ××ù
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* StaticMeshCompLid;//¸Ç¸Ç
 	UPROPERTY(EditAnywhere,Category = "DIY|Lid")
 	float LidPitch;
