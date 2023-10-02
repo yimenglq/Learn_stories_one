@@ -54,7 +54,7 @@ protected:
 	float Interactive_Line_end;//÷±œﬂΩªª•æ‡¿Î
 	UPROPERTY(EditAnywhere, Category = "DIY|UI")
 	TSubclassOf<UUserWidget> CrosshairUI;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class UAttributeActorComponent* AttributeComp;
 
 

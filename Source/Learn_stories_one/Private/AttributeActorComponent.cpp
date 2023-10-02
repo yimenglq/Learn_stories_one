@@ -38,6 +38,7 @@ void UAttributeActorComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 void UAttributeActorComponent::SetBlood_volume(int InVal)
 {
 	blood_volume = InVal;
+	OnBlood_volume_Changed.Broadcast(GetOwner(),this, blood_volume, InVal);
 }
 
 int UAttributeActorComponent::GetBlood_volume()
@@ -48,5 +49,6 @@ int UAttributeActorComponent::GetBlood_volume()
 void UAttributeActorComponent::GetBlood_volume(int& OutVal)
 {
 	OutVal = blood_volume;
+	
 }
 

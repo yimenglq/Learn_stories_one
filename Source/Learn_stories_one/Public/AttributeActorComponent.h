@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "AttributeActorComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnBlood_volume_Changed, AActor*, Actor, UAttributeActorComponent*, AttributeActorComp, float, Newblood_volume ,float, DelVal);
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class LEARN_STORIES_ONE_API UAttributeActorComponent : public UActorComponent
@@ -27,12 +29,14 @@ public:
 		
 
 protected:
-	UPROPERTY(EditAnywhere,Category = "DIY|Attribute")
+	UPROPERTY(BlueprintReadOnly,EditAnywhere,Category = "DIY|Attribute")//暴露给蓝图  和给编辑器修改
 	int blood_volume;
 
 
 
 public:
+	UPROPERTY(BlueprintAssignable,Category = "DIY|Attribute|Event")//只能与组播委托共用。公开属性在蓝图中指定。
+	FOnBlood_volume_Changed OnBlood_volume_Changed;
 
 	void	SetBlood_volume(int InVal);
 
@@ -41,3 +45,4 @@ public:
 	void	GetBlood_volume(int& OutVal);
 	
 };
+
