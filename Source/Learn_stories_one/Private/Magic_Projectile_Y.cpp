@@ -60,12 +60,18 @@ void AMagic_Projectile_Y::Tick(float DeltaTime)
 
 void AMagic_Projectile_Y::OnCompBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	DrawDebugString(GetWorld(), SweepResult.ImpactPoint, FString::Printf(TEXT("AMagic_Projectile_Y::OnCompBeginOverlap  OtherActor,%s"), *OtherActor->GetName()), nullptr, FColor::Black, 2.0f, true);
+	DrawDebugString(GetWorld(), SweepResult.ImpactPoint, FString::Printf(TEXT("AMagic_Projectile_Y::OnCompBeginOverlap  OtherActor,%s"), *OtherActor->GetName()), nullptr, FColor::Black, 5.0f, true);
 
 	if (auto* Character = Cast<ACharacter_Y>(OtherActor))
 	{
 		UAttributeActorComponent* Attribute = 	Character->GetAttributeComp();
-		Attribute->SetBlood_volume(Attribute->GetBlood_volume() - Hurt);
+		Attribute->ReviseBlood_volume(-Hurt);
+
+	}
+	else
+	if (UAttributeActorComponent * Attribute = Cast < UAttributeActorComponent>(OtherActor->GetComponentByClass(UAttributeActorComponent::StaticClass())))
+	{
+		Attribute->ReviseBlood_volume(-Hurt);
 
 	}
 
