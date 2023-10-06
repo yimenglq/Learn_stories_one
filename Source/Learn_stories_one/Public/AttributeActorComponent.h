@@ -34,6 +34,7 @@ protected:
 
 
 
+
 public:
 	UPROPERTY(BlueprintAssignable,Category = "DIY|Attribute|Event")//只能与组播委托共用。公开属性在蓝图中指定。
 	FOnBlood_volume_Changed OnBlood_volume_Changed;
@@ -44,5 +45,7 @@ public:
 	int GetBlood_volume();
 	void	GetBlood_volume(int& OutVal);
 	
+	UFUNCTION(BlueprintCallable, Category = "DIY|Attribute")
+	bool IsAlive();
 };
 

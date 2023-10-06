@@ -40,7 +40,7 @@ protected:
 	TSubclassOf<AActor>	Skill_4;//技能一
 	
 	UPROPERTY(EditAnywhere, Category = "DIY|Skills|end")
-	float end;
+	float end;//攻击准确最远距离
 	
 
 

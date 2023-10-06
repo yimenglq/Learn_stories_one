@@ -31,6 +31,11 @@ void ABlackHole_Y::Tick(float DeltaTime)
 
 
 
+UParticleSystem* ABlackHole_Y::GetParticleSystem()
+{
+	return InParticleSystem;
+}
+
 void ABlackHole_Y::OnCompBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	DrawDebugString(GetWorld(), SweepResult.ImpactPoint, FString::Printf(TEXT("ABlackHole_Y::OnCompBeginOverlap  OtherActor,%s"), *OtherActor->GetName()), nullptr, FColor::Black, 2.0f, true);

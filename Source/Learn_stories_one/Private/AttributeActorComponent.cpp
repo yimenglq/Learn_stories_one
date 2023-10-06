@@ -52,3 +52,8 @@ void UAttributeActorComponent::GetBlood_volume(int& OutVal)
 	
 }
 
+bool UAttributeActorComponent::IsAlive()
+{
+	return blood_volume > 0.0f;
+}
+

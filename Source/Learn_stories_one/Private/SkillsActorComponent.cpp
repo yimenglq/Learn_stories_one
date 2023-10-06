@@ -5,6 +5,8 @@
 #include "BlackHole_Y.h"
 #include <Kismet/GameplayStatics.h>
 #include <Camera/CameraComponent.h>
+#include"Particles\ParticleSystemComponent.h"
+#include <PhysicsEngine/RadialForceComponent.h>
 
 // Sets default values for this component's properties
 USkillsActorComponent::USkillsActorComponent()
@@ -68,8 +70,9 @@ void USkillsActorComponent::BlackHole_Spawn()
 	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	GetWorld()->SpawnActor<AActor>(Skill_1,Transform,SpawnParameters);
 
-
-	
+	/*UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), 
+		Cast<UParticleSystem>(Skill_1.GetDefaultObject()->GetComponentByClass(UParticleSystem::StaticClass())),Transform);
+	*/
 }
 
 void USkillsActorComponent::DrawShpere()
@@ -84,6 +87,12 @@ void USkillsActorComponent::DrawShpere()
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	A_this_spawnShpere =  GetWorld()->SpawnActor<AActor>(ADrawShpere, Transform, SpawnParameters);
+	
+	//auto* syc = (Skill_1.GetDefaultObject()->GetComponentByClass(URadialForceComponent::StaticClass()));
+	auto* sy = 	(ABlackHole_Y*)(Skill_1.GetDefaultObject());//
+	auto* syp = sy->GetParticleSystem();
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(),
+		syp, Transform); //在指定位置放指定的粒子特效
 }
 
 void USkillsActorComponent::Teleportation()

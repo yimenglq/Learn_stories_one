@@ -25,6 +25,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 
+private:
+	FVector HitPoint;
+
 protected:
 	UPROPERTY(VisibleAnywhere)
 	class USphereComponent* SphereComp;//球形碰撞
@@ -35,6 +38,13 @@ protected:
 
 	UPROPERTY(EditAnywhere,Category = "DIY|Attribute")
 	int Hurt;
+	/*UPROPERTY(BlueprintReadWrite,VisibleAnywhere)
+	class UAudioComponent* AudioComp;*/
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DIY|Sound")
+	class USoundBase* LaunchSound;//发射时的声音
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = "DIY|Sound")
+	class USoundBase* CollidingSound;//碰撞时的声音
 
 
 	UFUNCTION()
@@ -48,6 +58,7 @@ public:
 
 	bool	live:1;//是否存活
 
+	UFUNCTION()
 	void	Destroy();
 
 

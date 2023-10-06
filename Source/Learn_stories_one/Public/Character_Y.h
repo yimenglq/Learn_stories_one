@@ -58,6 +58,7 @@ protected:
 	class UAttributeActorComponent* AttributeComp;
 
 
+	virtual void PostInitializeComponents() override;
 public:
 
 	void MoveForward(float Value);
@@ -79,5 +80,9 @@ public:
 	void	Interactive();
 
 	UAttributeActorComponent* GetAttributeComp();
+	
+	UFUNCTION()
+	void OnBldVeChanged(AActor* Actor, UAttributeActorComponent* AttributeActorComp, float Newblood_volume, float DelVal);
+
 
 };

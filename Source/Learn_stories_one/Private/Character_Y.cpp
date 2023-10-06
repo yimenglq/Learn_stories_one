@@ -13,6 +13,7 @@
 #include"Blueprint\UserWidget.h"
 #include "AttributeActorComponent.h"
 #include <Components/SphereComponent.h>
+#include"Components\CapsuleComponent.h"
 
 // Sets default values
 ACharacter_Y::ACharacter_Y()
@@ -32,6 +33,12 @@ ACharacter_Y::ACharacter_Y()
 
 	TimerRate = 0.2f;
 	Interactive_Line_end = 100.0f;
+}
+
+void ACharacter_Y::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	AttributeComp->OnBlood_volume_Changed.AddDynamic(this, &ACharacter_Y::OnBldVeChanged);
 }
 
 // Called when the game starts or when spawned
@@ -94,6 +101,7 @@ void ACharacter_Y::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 }
 
+
 void ACharacter_Y::MoveForward(float Value)
 {
 	AddMovementInput(FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::X), Value);
@@ -152,6 +160,7 @@ void ACharacter_Y::BlackHole()
 	{
 		SkillsActorComp->DrawShpere();
 
+
 	}
 	else
 	{
@@ -168,6 +177,7 @@ void ACharacter_Y::BlackHole()
 		}
 	}
 	i++;
+	
 	
 
 }
@@ -203,5 +213,18 @@ void ACharacter_Y::Interactive()
 UAttributeActorComponent* ACharacter_Y::GetAttributeComp()
 {
 	return AttributeComp;
+}
+
+void ACharacter_Y::OnBldVeChanged(AActor* Actor, UAttributeActorComponent* AttributeActorComp, float Newblood_volume, float DelVal)
+{
+	if (Newblood_volume <= 0.0f && DelVal <= 0.0f)
+	{
+		auto* PC = 	Cast<APlayerController>(GetController());
+		DisableInput(PC);//禁用输入
+		//GetCapsuleComponent()->colse
+		SetActorEnableCollision(false);//允许为整个Actor启用/禁用碰撞
+
+	}
+
 }
 
