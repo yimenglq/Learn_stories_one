@@ -2,6 +2,8 @@
 
 
 #include "TreasureChestsActor.h"
+#include"Components\TimelineComponent.h"
+#include"Curves\CurveFloat.h"
 
 // Sets default values
 ATreasureChestsActor::ATreasureChestsActor()
@@ -11,7 +13,9 @@ ATreasureChestsActor::ATreasureChestsActor()
 
 	StaticMeshCompBase = CreateDefaultSubobject<UStaticMeshComponent>("StaticMeshCompBase_Y");
 	StaticMeshCompLid = CreateDefaultSubobject<UStaticMeshComponent>("StaticMeshCompLid_Y");
-	
+	TimeLineComp = CreateDefaultSubobject<UTimelineComponent>("TimeLineComp_Y");
+	CurveFloat = CreateDefaultSubobject<UCurveFloat>("CurveFloat_Y");
+
 	RootComponent = StaticMeshCompBase;
 	StaticMeshCompLid->SetupAttachment(StaticMeshCompBase);
 
@@ -19,12 +23,33 @@ ATreasureChestsActor::ATreasureChestsActor()
 	
 	LidPitch = LidYaw = LidRoll = 0;
 
+
+
+	//设置关键帧  曲线
+	FRichCurveKey CurveKey;
+	CurveKey.Time = 0;
+	CurveKey.Value = 0;
+	CurveFloat->FloatCurve.Keys.Add(CurveKey);
+	CurveKey.Time = 2;
+	CurveKey.Value = 1;
+	CurveFloat->FloatCurve.Keys.Add(CurveKey);
+	//end
+	//设置时间轴长短
+	TimeLineComp->SetTimelineLength(2.0f);
+	//设置时间轴控件调用函数
+	FOnTimelineFloat OnTimelineFloat;
+	 
+	OnTimelineFloat.BindDynamic(this, &ATreasureChestsActor::timeLinefunion);
+	//OnTimelineFloat.BindUFunction(this, "timeLinefunion");//这个也可以
+	TimeLineComp->AddInterpFloat(CurveFloat, OnTimelineFloat, NAME_None, TEXT("Lib"));//把曲线和调用函数加载入时间轴
+	
 }
 
 // Called when the game starts or when spawned
 void ATreasureChestsActor::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	
 }
 
@@ -35,10 +60,27 @@ void ATreasureChestsActor::Tick(float DeltaTime)
 
 }
 
-void ATreasureChestsActor::Interactive_Implementation()
+void ATreasureChestsActor::Interactive_Implementation(APawn* InOwPawn)
+{
+	static bool bOpen = 0;
+	if (!bOpen)
+	{
+		TimeLineComp->Play();
+		bOpen = 1;
+	}
+	else
+	{
+		TimeLineComp->Reverse();
+		bOpen = 0;
+	}
+}
+
+void ATreasureChestsActor::timeLinefunion(float Output)
 {
 	
-	StaticMeshCompLid->SetRelativeRotation(FRotator(LidPitch,LidYaw,LidRoll));
 
+		//FMath::Lerp线性插值 根据第3个参数 线性计算前两个参数
+	StaticMeshCompLid->SetRelativeRotation(FMath::Lerp(FRotator(0, 0, 0), FRotator(LidPitch, LidYaw, LidRoll), Output));
 }
+
 

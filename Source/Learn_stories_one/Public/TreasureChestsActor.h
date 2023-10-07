@@ -36,7 +36,18 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "DIY|Lid")
 	float LidRoll;
 
+	UPROPERTY(VisibleAnywhere)
+	class UTimelineComponent* TimeLineComp;
+
+	UPROPERTY(VisibleAnywhere)
+	UCurveFloat* CurveFloat;
+
+	
+
 public:
 
-	void	Interactive_Implementation()override;
+	void	Interactive_Implementation(APawn* InOwPawn)override;
+
+	UFUNCTION()
+	void timeLinefunion(float Output);
 };

@@ -24,5 +24,5 @@ class LEARN_STORIES_ONE_API IInteractive_Interface
 public:
 	
 	UFUNCTION( BlueprintNativeEvent, Category = "Interactive")
-	void Interactive();
+	void Interactive(APawn* InOwPawn);
 };

@@ -98,6 +98,7 @@ void AMagic_Projectile_Y::OnCompBeginOverlap(UPrimitiveComponent* OverlappedComp
 	//ProjectileMovementComp->StopSimulating(FHitResult());
 	
 	//SetActorLocation(SweepResult.Location);
+	HitPoint = GetActorLocation();
 	Destroy();
 
 }
@@ -115,6 +116,7 @@ void AMagic_Projectile_Y::Destroy()
 {	
 	if (CollidingSound)
 	{
+		//FVector locn = 	GetActorLocation();
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), CollidingSound, HitPoint,CollidingSound->GetVolumeMultiplier(),CollidingSound->GetPitchMultiplier(),
 			0.0f,CollidingSound->AttenuationSettings,CollidingSound->SoundConcurrencySettings_DEPRECATED);
 		DrawDebugString(GetWorld(), HitPoint, FString::Printf(TEXT("AMagic_Projectile_Y::UGameplayStatics::PlaySoundAtLocation")), nullptr, FColor::Red, 5.0f, true);
