@@ -48,7 +48,7 @@ void ATargutAummy::OnBldVeChanged(AActor* Actor, UAttributeActorComponent* Attri
 {
 	if (DelVal < 0.0f)
 	{
-		StaticMeshComp->SetScalarParameterValueOnMaterials(TEXT("TimeToHit"), GetWorld()->TimeSeconds);
+		StaticMeshComp->SetScalarParameterValueOnMaterials(TEXT("TimeToHit"), GetWorld()->TimeSeconds);//更改材质标量值
 	}
 }
 

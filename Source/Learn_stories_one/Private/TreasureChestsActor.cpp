@@ -65,17 +65,17 @@ void ATreasureChestsActor::Interactive_Implementation(APawn* InOwPawn)
 	static bool bOpen = 0;
 	if (!bOpen)
 	{
-		TimeLineComp->Play();
+		TimeLineComp->Play();//播放时间轴
 		bOpen = 1;
 	}
 	else
 	{
-		TimeLineComp->Reverse();
+		TimeLineComp->Reverse();//反向播放
 		bOpen = 0;
 	}
 }
 
-void ATreasureChestsActor::timeLinefunion(float Output)
+void ATreasureChestsActor::timeLinefunion(float Output)//时间轴调用函数
 {
 	
 

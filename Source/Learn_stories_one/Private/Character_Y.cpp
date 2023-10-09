@@ -149,7 +149,7 @@ void ACharacter_Y::magic_Spawn_Timer()
 	Transform_Spawn = FTransform((end-SpawnLoctaion).Rotation(), SpawnLoctaion);//生成的变换
 	FActorSpawnParameters spawnParams;//生成参数
 	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	GetWorld()->SpawnActor<AActor>(FaSeWu, Transform_Spawn, spawnParams);
+	GetWorld()->SpawnActor<AActor>(FaSeWu, Transform_Spawn, spawnParams)->SetOwner(this);
 	GetWorldTimerManager().ClearTimer(TimerHandle);
 }
 

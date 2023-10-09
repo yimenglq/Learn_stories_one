@@ -45,6 +45,7 @@ AMagic_Projectile_Y::AMagic_Projectile_Y()
 
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &AMagic_Projectile_Y::OnCompBeginOverlap);
 	SphereComp->OnComponentHit.AddDynamic(this, &AMagic_Projectile_Y::OnCompHit);
+	SphereComp->OnComponentEndOverlap.AddDynamic(this, &AMagic_Projectile_Y::OnCompEndOverlap);
 	//AudioComp->OnAudioFinished.AddDynamic(this, &AMagic_Projectile_Y::Destroy);
 	
 	live = 1;
@@ -69,7 +70,26 @@ void AMagic_Projectile_Y::Tick(float DeltaTime)
 
 void AMagic_Projectile_Y::OnCompBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	
+	if (GetOwner() == OtherActor)
+	{
+
+		SphereComp->SetSimulatePhysics(false);
+		//FTimerDelegate a_TimerDelegate;
+		////a_TimerDelegate.BindUFunction(this, TEXT("Destroy"));
+		//a_TimerDelegate.BindLambda([this](int i)->void
+		//	{
+		//		int a = i;
+		//		SphereComp->SetSimulatePhysics(true);
+		//		SphereComp->SetHiddenInGame(false);
+
+		//	},9);
+		//
+		//FTimerHandle a_TimerHandle;
+		//GetWorldTimerManager().SetTimer(a_TimerHandle,a_TimerDelegate, 1.0f, false);
+		
+		return;
+	}
+		
 	live = 0;
 	DrawDebugString(GetWorld(), SweepResult.ImpactPoint, FString::Printf(TEXT("AMagic_Projectile_Y::OnCompBeginOverlap  OtherActor,%s"), *OtherActor->GetName()), nullptr, FColor::Black, 5.0f, true);
 	//SphereComp->SetSimulatePhysics(false);//Ä£ÄâÎïÀí
@@ -103,6 +123,12 @@ void AMagic_Projectile_Y::OnCompBeginOverlap(UPrimitiveComponent* OverlappedComp
 
 }
 
+void AMagic_Projectile_Y::OnCompEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	SphereComp->SetSimulatePhysics(true);
+
+}
+
 void AMagic_Projectile_Y::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	FTimerHandle handle;
@@ -110,6 +136,8 @@ void AMagic_Projectile_Y::OnCompHit(UPrimitiveComponent* HitComponent, AActor* O
 	//DrawDebugString(GetWorld(), GetActorLocation(), FString::Printf(TEXT("AMagic_Projectile_Y::UGameplayStatics::PlaySoundAtLocation:")), nullptr, FColor::Red, 5.0f, true);
 	HitPoint = Hit.ImpactPoint;
 }
+
+
 
 
 void AMagic_Projectile_Y::Destroy()
