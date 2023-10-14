@@ -38,10 +38,9 @@ ATreasureChestsActor::ATreasureChestsActor()
 	TimeLineComp->SetTimelineLength(2.0f);
 	//设置时间轴控件调用函数
 	FOnTimelineFloat OnTimelineFloat;
-	 
 	OnTimelineFloat.BindDynamic(this, &ATreasureChestsActor::timeLinefunion);
 	//OnTimelineFloat.BindUFunction(this, "timeLinefunion");//这个也可以
-	TimeLineComp->AddInterpFloat(CurveFloat, OnTimelineFloat, NAME_None, TEXT("Lib"));//把曲线和调用函数加载入时间轴
+	TimeLineComp->AddInterpFloat(CurveFloat, OnTimelineFloat);//把曲线和调用函数加载入时间轴
 	
 }
 
