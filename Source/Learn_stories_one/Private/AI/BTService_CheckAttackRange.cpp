@@ -25,7 +25,9 @@ void UBTService_CheckAttackRange::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 					bool bWithinRange = Dist < 2000.0f;
 					
 					bool bOfSighto = AIController->LineOfSightTo(TargetActor);//AI是否能看到目标Actor 
-					BlackboardComp->SetValueAsBool(AttackRangeKey.SelectedKeyName,(bWithinRange && bOfSighto));
+					if (!bOfSighto)
+						BlackboardComp->SetValueAsObject("TargetActor", NULL);
+					BlackboardComp->SetValueAsBool(bAttackRangeKey.SelectedKeyName,(bWithinRange && bOfSighto));
 
 				}
 

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "AICharacter.generated.h"
+class UPawnSensingComponent;
 
 UCLASS()
 class LEARN_STORIES_ONE_API AAICharacter : public ACharacter
@@ -25,5 +26,16 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
+protected:
+	UPROPERTY(VisibleAnywhere)
+	UPawnSensingComponent * PawnSensingComp;
+	UPROPERTY(EditAnywhere,Category = "DIY|Blackboard")
+	FName TargetActor;
 
+public:
+	UFUNCTION()
+	void OnSeePawnFun(APawn* Pawn);
+
+	virtual	void	PostInitializeComponents() override;
 };

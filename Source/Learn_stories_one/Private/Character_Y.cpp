@@ -14,6 +14,7 @@
 #include "AttributeActorComponent.h"
 #include <Components/SphereComponent.h>
 #include"Components\CapsuleComponent.h"
+#include <Camera/CameraShakeSourceComponent.h>
 
 // Sets default values
 ACharacter_Y::ACharacter_Y()
@@ -39,6 +40,7 @@ void ACharacter_Y::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	AttributeComp->OnBlood_volume_Changed.AddDynamic(this, &ACharacter_Y::OnBldVeChanged);
+	this->GetCapsuleComponent()->OnComponentBeginOverlap.AddUniqueDynamic(this, &ACharacter_Y::OnCapsuleCompOverlap);
 }
 
 // Called when the game starts or when spawned
@@ -104,6 +106,16 @@ void ACharacter_Y::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void ACharacter_Y::MoveForward(float Value)
 {
+	/*沿给定的世界方向矢量（通常归一化）添加运动输入，按“ScaleValue”缩放。如果比例值< 0，则移动方向相反。
+	 * 基础 Pawn 类不会自动应用移动，由用户在 Tick 事件中执行此操作。Character 和 DefaultPawn 等子类会自动处理此输入并移动。
+	 
+	 @param WorldDirection		Direction in world space to apply input  
+	 世界空间中应用输入的方向
+	 * @param ScaleValue		Scale to apply to input. This can be used for analog input, ie a value of 0.5 applies half the normal value, while -1.0 would reverse the direction.
+	 * 缩放以应用于输入。这可用于模拟输入，即值 0.5 应用正常值的一半，而 -1.0 将反转方向。
+	 * @param bForce			If true always add the input, ignoring the result of IsMoveInputIgnored().
+	 * 如果为 true，则始终添加输入，忽略 IsMoveInputIgnored（） 的结果。
+	 */
 	AddMovementInput(FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::X), Value);
 
 	//AddMovementInput(GetActorForwardVector(), Value);
@@ -149,7 +161,10 @@ void ACharacter_Y::magic_Spawn_Timer()
 	Transform_Spawn = FTransform((end-SpawnLoctaion).Rotation(), SpawnLoctaion);//生成的变换
 	FActorSpawnParameters spawnParams;//生成参数
 	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	GetWorld()->SpawnActor<AActor>(FaSeWu, Transform_Spawn, spawnParams)->SetOwner(this);
+	spawnParams.Owner = this;
+	spawnParams.Instigator = this;
+	//spawnParams.Name = TEXT("gj");
+	GetWorld()->SpawnActor<AActor>(FaSeWu, Transform_Spawn, spawnParams);//->SetOwner(this);
 	GetWorldTimerManager().ClearTimer(TimerHandle);
 }
 
@@ -222,9 +237,40 @@ void ACharacter_Y::OnBldVeChanged(AActor* Actor, UAttributeActorComponent* Attri
 		auto* PC = 	Cast<APlayerController>(GetController());
 		DisableInput(PC);//禁用输入
 		//GetCapsuleComponent()->colse
-		SetActorEnableCollision(false);//允许为整个Actor启用/禁用碰撞
+		//SetActorEnableCollision(false);//允许为整个Actor启用/禁用碰撞
+		
+		GetMesh()->SetCollisionProfileName("Ragdoll");
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetMesh()->SetAllBodiesSimulatePhysics(true);
+		GetMesh()->SetDrawDebugSkeleton(true);
+		//SetActorRelativeTransform(GetMesh()->GetComponentTransform());
 
 	}
 
+}
+
+void ACharacter_Y::OnCapsuleCompOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor->GetOwner() == this)
+	{
+
+		return;
+	}
+	if (ensureMsgf(CameraShake, TEXT("erro 相机抖动为空.")))
+	{
+
+	//镜头抖动
+		GetController<APlayerController>()->ClientPlayCameraShake(CameraShake);
+		//可触发式延迟
+		UKismetSystemLibrary::RetriggerableDelay(this, 0.2f, FLatentActionInfo(0,0,TEXT("ClientStopCameraShake"),this));
+	}
+	
+
+}
+
+void ACharacter_Y::ClientStopCameraShake()
+{
+		//关闭镜头抖动
+		GetController<APlayerController>()->ClientStopCameraShake(CameraShake);
 }
 

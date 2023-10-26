@@ -56,9 +56,12 @@ protected:
 	TSubclassOf<UUserWidget> CrosshairUI;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class UAttributeActorComponent* AttributeComp;
-
+	UPROPERTY(EditAnywhere, Category = "DIY|CameraShake")
+	TSubclassOf<class UCameraShakeBase> CameraShake;
 
 	virtual void PostInitializeComponents() override;
+
+	
 public:
 
 	void MoveForward(float Value);
@@ -81,8 +84,15 @@ public:
 
 	UAttributeActorComponent* GetAttributeComp();
 	
+public:
+
+	//Î¯ÍÐ´¥·¢º¯Êý start
 	UFUNCTION()
 	void OnBldVeChanged(AActor* Actor, UAttributeActorComponent* AttributeActorComp, float Newblood_volume, float DelVal);
 
-
+	UFUNCTION()
+	void	OnCapsuleCompOverlap( UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	// end
+	UFUNCTION()
+	void	ClientStopCameraShake();
 };

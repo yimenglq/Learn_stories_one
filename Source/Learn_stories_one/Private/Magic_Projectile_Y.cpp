@@ -10,13 +10,14 @@
 #include "AttributeActorComponent.h"
 #include"Components\AudioComponent.h"
 #include"Kismet\GameplayStatics.h"
+#include <AI/AICharacter.h>
 
 
 // Sets default values
 AMagic_Projectile_Y::AMagic_Projectile_Y()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComp_Y");
 	RootComponent = SphereComp;
 	///////////SphereComponents->SetCollisionObjectType(ECC_worldDynamic);
@@ -43,13 +44,25 @@ AMagic_Projectile_Y::AMagic_Projectile_Y()
 	ProjectileMovementComp->bInitialVelocityInLocalSpace = true;
 	ProjectileMovementComp->ProjectileGravityScale = 0.0f;
 
-	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &AMagic_Projectile_Y::OnCompBeginOverlap);
+	/*SphereComp->OnComponentBeginOverlap.AddDynamic(this, &AMagic_Projectile_Y::OnCompBeginOverlap);
 	SphereComp->OnComponentHit.AddDynamic(this, &AMagic_Projectile_Y::OnCompHit);
-	SphereComp->OnComponentEndOverlap.AddDynamic(this, &AMagic_Projectile_Y::OnCompEndOverlap);
+	SphereComp->OnComponentEndOverlap.AddDynamic(this, &AMagic_Projectile_Y::OnCompEndOverlap);*/
 	//AudioComp->OnAudioFinished.AddDynamic(this, &AMagic_Projectile_Y::Destroy);
 	
 	live = 1;
 	Hurt = 20;
+}
+void AMagic_Projectile_Y::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	
+	SphereComp->OnComponentBeginOverlap.AddUniqueDynamic(this, &AMagic_Projectile_Y::OnCompBeginOverlap);//°óÈë¶à²¥
+
+	
+	SphereComp->OnComponentHit.AddUniqueDynamic(this, &AMagic_Projectile_Y::OnCompHit);
+	SphereComp->OnComponentEndOverlap.AddUniqueDynamic(this, &AMagic_Projectile_Y::OnCompEndOverlap);
+
+
 }
 
 // Called when the game starts or when spawned
@@ -60,6 +73,10 @@ void AMagic_Projectile_Y::BeginPlay()
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), LaunchSound, GetActorLocation(), (LaunchSound->GetVolumeMultiplier()), (LaunchSound->GetPitchMultiplier()),
 		0.0f, (USoundAttenuation*)LaunchSound->AttenuationSettings, (USoundConcurrency*)LaunchSound->SoundConcurrencySettings_DEPRECATED);
 }
+
+
+
+
 
 // Called every frame
 void AMagic_Projectile_Y::Tick(float DeltaTime)
@@ -114,11 +131,18 @@ void AMagic_Projectile_Y::OnCompBeginOverlap(UPrimitiveComponent* OverlappedComp
 		Attribute->ReviseBlood_volume(-Hurt);
 
 	}
+	if (AAICharacter* AI = Cast<AAICharacter>(OtherActor))
+	{
+		AI->GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->GetTimeSeconds());
+	}
 	//ProjectileMovementComp->StopMovementImmediately();
 	//ProjectileMovementComp->StopSimulating(FHitResult());
 	
 	//SetActorLocation(SweepResult.Location);
 	HitPoint = GetActorLocation();
+
+
+
 	Destroy();
 
 }

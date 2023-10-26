@@ -17,7 +17,7 @@ class LEARN_STORIES_ONE_API UBTService_CheckAttackRange : public UBTService
 
 protected:
 	UPROPERTY(EditAnywhere,Category = "DIY|AI")
-	FBlackboardKeySelector AttackRangeKey;
+	FBlackboardKeySelector bAttackRangeKey;
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
 };

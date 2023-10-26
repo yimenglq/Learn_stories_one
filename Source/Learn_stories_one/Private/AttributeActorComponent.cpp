@@ -35,11 +35,27 @@ void UAttributeActorComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	// ...
 }
 
+
+
 void UAttributeActorComponent::ReviseBlood_volume(int InVal)
 {
 	blood_volume += InVal;
 	OnBlood_volume_Changed.Broadcast(GetOwner(),this, blood_volume, InVal);
 }
+
+//Static Function  start
+UAttributeActorComponent* UAttributeActorComponent::GetAttributeActorComponent(AActor* InActor)
+{
+	if (InActor)
+	{
+		return Cast<UAttributeActorComponent>(InActor->GetComponentByClass(StaticClass()));
+	}
+
+	return nullptr;
+}
+
+
+//Static Function end
 
 int UAttributeActorComponent::GetBlood_volume()
 {

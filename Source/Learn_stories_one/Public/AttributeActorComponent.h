@@ -18,6 +18,7 @@ public:
 	// Sets default values for this component's properties
 	UAttributeActorComponent();
 
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -32,7 +33,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly,EditAnywhere,Category = "DIY|Attribute")//±©Â¶¸øÀ¶Í¼  ºÍ¸ø±à¼­Æ÷ÐÞ¸Ä
 	int blood_volume;
 
-
+public:
+	UFUNCTION(BlueprintCallable,Category = "DIY|Attribute", meta = (GetAttributeActorComp))
+	static UAttributeActorComponent* GetAttributeActorComponent(AActor* InActor);
 
 
 public:
@@ -47,5 +50,10 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "DIY|Attribute")
 	bool IsAlive();
+
+
+
+
+
 };
 
