@@ -4,8 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+
 #include "AICharacter.generated.h"
+
 class UPawnSensingComponent;
+class UAI_UserWidget;
 
 UCLASS()
 class LEARN_STORIES_ONE_API AAICharacter : public ACharacter
@@ -29,13 +32,29 @@ public:
 	
 protected:
 	UPROPERTY(VisibleAnywhere)
-	UPawnSensingComponent * PawnSensingComp;
+	UPawnSensingComponent * PawnSensingComp;//感知组件
 	UPROPERTY(EditAnywhere,Category = "DIY|Blackboard")
-	FName TargetActor;
+	FName TargetActor;//黑板上的攻击目标
+
+	UPROPERTY(EditAnywhere, Category = "DIY|UI")
+	TSubclassOf< UAI_UserWidget> c_BloodUI;//血条UI
+	UAI_UserWidget* c_BloodUIIniscte;
+
+	UPROPERTY(VisibleAnywhere)
+	class UAttributeActorComponent* c_AttributeActorComp;
 
 public:
 	UFUNCTION()
-	void OnSeePawnFun(APawn* Pawn);
+	void OnSeePawnFun(APawn* Pawn);//观测到Pawn时触发
 
 	virtual	void	PostInitializeComponents() override;
+
+	UFUNCTION()
+	void OnComponentBeginOverlapFun(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
+	UFUNCTION()
+	void	OnBlood_volume_ChangedFun(AActor* Actor, UAttributeActorComponent* AttributeActorComp, float Newblood_volume, float DelVal);
+	UFUNCTION()
+	void	OnDestroyedFun(AActor* DestroyedActor);
+
 };

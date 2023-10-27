@@ -48,7 +48,7 @@ UAttributeActorComponent* UAttributeActorComponent::GetAttributeActorComponent(A
 {
 	if (InActor)
 	{
-		return Cast<UAttributeActorComponent>(InActor->GetComponentByClass(StaticClass()));
+		return Cast<UAttributeActorComponent>(InActor->GetComponentByClass(UAttributeActorComponent::StaticClass()));
 	}
 
 	return nullptr;
