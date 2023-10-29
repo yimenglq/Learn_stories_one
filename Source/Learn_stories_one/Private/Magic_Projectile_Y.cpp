@@ -134,6 +134,7 @@ void AMagic_Projectile_Y::OnCompBeginOverlap(UPrimitiveComponent* OverlappedComp
 	if (AAICharacter* AI = Cast<AAICharacter>(OtherActor))
 	{
 		AI->GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->GetTimeSeconds());
+		AI->GetMesh()->SetScalarParameterValueOnMaterials("HitFlashSpeed", AI->c_AIHitFlashSpeed);
 	}
 	//ProjectileMovementComp->StopMovementImmediately();
 	//ProjectileMovementComp->StopSimulating(FHitResult());

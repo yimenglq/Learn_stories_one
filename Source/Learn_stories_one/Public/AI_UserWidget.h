@@ -43,8 +43,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "DIY|UI|Met")
 	FName c_ParameterName;
 
-public:
+	
 
+public:
+	FVector c_WorldOffetValue;
 	float c_OldBlood,c_NewBlood;
 	
 

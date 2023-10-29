@@ -11,6 +11,7 @@
 UAI_UserWidget::UAI_UserWidget(const FObjectInitializer& ObjectInitializer):UUserWidget(ObjectInitializer)
 {
 	c_OldBlood = c_NewBlood = 0;
+	c_WorldOffetValue = { 0,0,0 };
 	//c_bOldBloodInit = false;
 
 	
@@ -18,12 +19,12 @@ UAI_UserWidget::UAI_UserWidget(const FObjectInitializer& ObjectInitializer):UUse
 
 void UAI_UserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
-	
+	Super::NativeTick(MyGeometry,InDeltaTime);
 	FVector2D UI2dPos;
 	if(c_AttachedActor != nullptr)
-	if (UGameplayStatics::ProjectWorldToScreen(GetOwningPlayer(), c_AttachedActor->GetActorLocation(), UI2dPos))
+	if (UGameplayStatics::ProjectWorldToScreen(GetOwningPlayer(), c_AttachedActor->GetActorLocation()+c_WorldOffetValue, UI2dPos)) //3D世界坐标转换为2D屏幕坐标
 	{
-		float ViewScale = UWidgetLayoutLibrary::GetViewportScale(c_AttachedActor);
+		float ViewScale = UWidgetLayoutLibrary::GetViewportScale(c_AttachedActor);//获取视口缩放  
 
 		UI2dPos /= ViewScale;
 		c_SizeBoxBlood->SetRenderTranslation(UI2dPos);
@@ -38,6 +39,7 @@ void UAI_UserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 			c_ScalarParameterValue.Value = c_NewBlood / c_OldBlood;
 		}
 
+		GetOwningPlayerPawn();
 		c_Bloodimg->GetDynamicMaterial()->SetScalarParameterValue(c_ScalarParameterValue.ParameterName, c_ScalarParameterValue.Value);
 	}
 	//UWidgetLayoutLibrary::GetViewportWidgetGeometry(GetWorld());

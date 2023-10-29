@@ -42,6 +42,11 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	class UAttributeActorComponent* c_AttributeActorComp;
+public:
+	UPROPERTY(EditAnywhere,Category = "DIY|UI")
+	FVector	c_UIWorldOffetValue;//ÊÀ½çÆ«ÒÆÖµUI
+	UPROPERTY(EditAnywhere,Category = "DIY|Hit")
+	float	c_AIHitFlashSpeed;
 
 public:
 	UFUNCTION()

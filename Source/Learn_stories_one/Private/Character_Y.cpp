@@ -15,6 +15,7 @@
 #include <Components/SphereComponent.h>
 #include"Components\CapsuleComponent.h"
 #include <Camera/CameraShakeSourceComponent.h>
+#include "GameMode/YGameModeBase.h"
 
 // Sets default values
 ACharacter_Y::ACharacter_Y()
@@ -50,8 +51,21 @@ void ACharacter_Y::BeginPlay()
 	if (CrosshairUI)
 	{
 
-		
-		CreateWidget(UGameplayStatics::GetPlayerController(this,0), CrosshairUI)->AddToViewport();
+		if (APlayerController* PlayerController = GetController<APlayerController>())
+		{
+			AYGameModeBase* GameMode = GetWorld()->GetAuthGameMode<AYGameModeBase>();
+			UUserWidget* Widget = GameMode->IsControllerAttWidget(PlayerController);
+			if (Widget != nullptr)
+			{
+				
+				return;
+			}
+			Widget = CreateWidget(PlayerController, CrosshairUI);
+			Widget->AddToViewport();
+			GameMode->AddControllerAttWidget(PlayerController, Widget);
+
+		}
+			
 
 	}
 }
@@ -232,25 +246,36 @@ UAttributeActorComponent* ACharacter_Y::GetAttributeComp()
 
 void ACharacter_Y::OnBldVeChanged(AActor* Actor, UAttributeActorComponent* AttributeActorComp, float Newblood_volume, float DelVal)
 {
+	UE_LOG(LogTemp, Warning, TEXT("ACharacter_Y::OnBldVeChanged"))
 	if (Newblood_volume <= 0.0f && DelVal <= 0.0f)
 	{
-		auto* PC = 	Cast<APlayerController>(GetController());
-		DisableInput(PC);//禁用输入
-		//GetCapsuleComponent()->colse
-		//SetActorEnableCollision(false);//允许为整个Actor启用/禁用碰撞
 		
-		GetMesh()->SetCollisionProfileName("Ragdoll");
-		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		GetMesh()->SetAllBodiesSimulatePhysics(true);
-		GetMesh()->SetDrawDebugSkeleton(true);
-		//SetActorRelativeTransform(GetMesh()->GetComponentTransform());
+			GetMesh()->SetCollisionProfileName("Ragdoll");
+			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			GetMesh()->SetAllBodiesSimulatePhysics(true);
+			GetMesh()->SetDrawDebugSkeleton(true);
+			auto* PC = 	Cast<APlayerController>(GetController());
+		if (PC)
+		{
 
+		
+			DisableInput(PC);//禁用输入
+			//GetCapsuleComponent()->colse
+			//SetActorEnableCollision(false);//允许为整个Actor启用/禁用碰撞
+		
+			
+			//SetActorRelativeTransform(GetMesh()->GetComponentTransform());
+		
+			GetWorld()->GetAuthGameMode<AYGameModeBase>()->RebirthRules(PC);
+		
+		}
 	}
 
 }
 
 void ACharacter_Y::OnCapsuleCompOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	UE_LOG(LogTemp,Warning,TEXT("ACharacter_Y::OnCapsuleCompOverlap"))
 	if (OtherActor->GetOwner() == this)
 	{
 
@@ -260,11 +285,16 @@ void ACharacter_Y::OnCapsuleCompOverlap(UPrimitiveComponent* OverlappedComponent
 	{
 
 	//镜头抖动
-		GetController<APlayerController>()->ClientPlayCameraShake(CameraShake);
+		if (auto* PlayerController = GetController<APlayerController>())
+		{
+
+
+			PlayerController -> ClientPlayCameraShake(CameraShake);
+		
 		//可触发式延迟
 		UKismetSystemLibrary::RetriggerableDelay(this, 0.2f, FLatentActionInfo(0,0,TEXT("ClientStopCameraShake"),this));
+		}
 	}
-	
 
 }
 

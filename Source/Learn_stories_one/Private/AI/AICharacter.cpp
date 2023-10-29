@@ -26,8 +26,8 @@ AAICharacter::AAICharacter()
 	c_AttributeActorComp->ReviseBlood_volume(100.f);
 
 	TargetActor = TEXT("TargetActor");
-	
-	
+	c_UIWorldOffetValue = { 0,0,0 };
+	c_AIHitFlashSpeed = 8.0f;
 	/*OnActorBeginOverlap.AddDynamic(this, &AAICharacter::OnActorBeginOverlapFun);*/
 }
 
@@ -98,7 +98,7 @@ void AAICharacter::OnComponentBeginOverlapFun(UPrimitiveComponent* OverlappedCom
 
 
 	}*/
-
+	
 }
 
 void AAICharacter::OnBlood_volume_ChangedFun(AActor* Actor, UAttributeActorComponent* AttributeActorComp, float Newblood_volume, float DelVal)
@@ -107,6 +107,7 @@ void AAICharacter::OnBlood_volume_ChangedFun(AActor* Actor, UAttributeActorCompo
 	{
 		c_BloodUIIniscte = CreateWidget<UAI_UserWidget>(GetWorld(), c_BloodUI);
 		c_BloodUIIniscte->c_AttachedActor = this;
+		c_BloodUIIniscte->c_WorldOffetValue = c_UIWorldOffetValue;
 		c_BloodUIIniscte->c_OldBlood = Newblood_volume - DelVal;
 		c_BloodUIIniscte->AddToViewport();
 	}
