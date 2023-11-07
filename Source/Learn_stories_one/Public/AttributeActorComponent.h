@@ -30,9 +30,10 @@ public:
 		
 
 protected:
-	UPROPERTY(BlueprintReadOnly,EditAnywhere,Category = "DIY|Attribute")//暴露给蓝图  和给编辑器修改
-	int blood_volume;
-
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "DIY|Attribute")//暴露给蓝图  和给编辑器修改
+		int blood_volume;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere , Category = "DIY|Attribute")
+		int Maxblood;//最大血量
 public:
 	UFUNCTION(BlueprintCallable,Category = "DIY|Attribute", meta = (GetAttributeActorComp))
 	static UAttributeActorComponent* GetAttributeActorComponent(AActor* InActor);

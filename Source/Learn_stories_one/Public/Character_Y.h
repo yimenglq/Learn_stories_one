@@ -52,6 +52,8 @@ protected:
 
 	UPROPERTY(EditAnywhere ,Category = "DIY|Interactive")
 	float Interactive_Line_end;//直线交互距离
+	
+	
 	UPROPERTY(EditAnywhere, Category = "DIY|UI")
 	TSubclassOf<UUserWidget> CrosshairUI;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -59,9 +61,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "DIY|CameraShake")
 	TSubclassOf<class UCameraShakeBase> CameraShake;
 
+	UPROPERTY(VisibleAnywhere)
+	class UActionActorComp* ActionActorComp;
 	virtual void PostInitializeComponents() override;
 
 	
+
 public:
 
 	void MoveForward(float Value);
@@ -73,8 +78,14 @@ public:
 	
 	void StopJump();
 	
+	void SatrtSprint();
+
+	void StopSprint();
+
 
 	void magic_Spawn();
+	void Teleportation();
+
 
 	void magic_Spawn_Timer();
 
@@ -82,8 +93,11 @@ public:
 
 	void	Interactive();
 
-	UAttributeActorComponent* GetAttributeComp();
 	
+	UAttributeActorComponent* GetAttributeComp();
+	UCameraComponent* GetCameraComponent();
+
+	friend class UYMagicProjectileAction;
 public:
 
 	//委托触发函数 start

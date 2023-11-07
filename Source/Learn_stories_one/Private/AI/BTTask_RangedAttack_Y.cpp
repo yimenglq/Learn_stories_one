@@ -15,15 +15,16 @@ EBTNodeResult::Type UBTTask_RangedAttack_Y::ExecuteTask(UBehaviorTreeComponent& 
 		FVector AIMeshSocketLocation = AICharacter->GetMesh()->GetSocketLocation(AIMEshSocketLocationName);
 		
 		AActor* TargetActor = Cast<AActor>( OwnerComp.GetBlackboardComponent()->GetValueAsObject("TargetActor"));
-		if (TargetActor)
+		if (TargetActor && !TargetActor->IsPendingKillPending())
 		{
+
 				FVector TargetActorLocation = TargetActor->GetActorLocation();
 				FRotator AItoTargetActor_Rotator = (TargetActorLocation - AIMeshSocketLocation).Rotation();
 				FActorSpawnParameters SpawnParameters;
 				SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+				SpawnParameters.Owner = AICharacter;
 				AActor* SpawnAc =	GetWorld()->SpawnActor<AActor>(FaSeWu, AIMeshSocketLocation, AItoTargetActor_Rotator, SpawnParameters);
-				if(SpawnAc)
-					SpawnAc->SetOwner(AICharacter);
+				
 				return SpawnAc ? EBTNodeResult::Succeeded/*³É¹¦*/ : EBTNodeResult::Failed;
 		
 		}

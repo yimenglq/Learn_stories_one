@@ -72,7 +72,52 @@ void AAICharacter::OnSeePawnFun(APawn* Pawn)
 	{
 		
 		UBlackboardComponent* BlackboardComp = AIConl->GetBlackboardComponent();
-		BlackboardComp->SetValueAsObject(TargetActor,Pawn);
+		if (APawn* tp =	Cast<APawn>( BlackboardComp->GetValueAsObject(TargetActor)))//失去玩家pawn捕捉后 有10s存有玩家pawn
+		{
+			if (tp->IsPendingKillPending())
+			{
+				return;
+			}
+
+			auto* ctp =	tp->GetController();
+			if(ctp)
+			if (ctp->IsPlayerController())
+			{
+				static bool bPawnNotPlayer = false;
+				
+				if (tp != Pawn && !bPawnNotPlayer)
+				{
+					bPawnNotPlayer = true;
+					//UKismetSystemLibrary::RetriggerableDelay(this, 0.2f, FLatentActionInfo(0, 0, TEXT("ClientStopCameraShake"), this));
+					FTimerDelegate TimerDelegate;
+					TimerDelegate.BindLambda([BlackboardComp,this]()->void
+						{
+							UE_LOG(LogTemp, Warning, TEXT("GetWorld()->GetTimerManager().SetTimer(c_TimerHandle, TimerDelegate, 10.0f, false);\
+									bPawnNotPlayer = true; "))
+								
+							BlackboardComp->SetValueAsObject(this->TargetActor, NULL);
+						});
+					GetWorld()->GetTimerManager().SetTimer(c_TimerHandle,TimerDelegate,10.0f,false);
+					return;
+				}
+				else
+				{
+					if (tp == Pawn)
+					{
+						bPawnNotPlayer = false;
+						GetWorld()->GetTimerManager().ClearTimer(c_TimerHandle);
+						
+					}
+					return;
+
+				}
+
+			}
+
+		}
+		BlackboardComp->SetValueAsObject(TargetActor, Pawn);
+			
+
 	}
 
 

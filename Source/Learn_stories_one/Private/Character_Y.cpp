@@ -16,6 +16,9 @@
 #include"Components\CapsuleComponent.h"
 #include <Camera/CameraShakeSourceComponent.h>
 #include "GameMode/YGameModeBase.h"
+#include "Action/ActionActorComp.h"
+#include"Action\YAction.h"
+
 
 // Sets default values
 ACharacter_Y::ACharacter_Y()
@@ -26,6 +29,7 @@ ACharacter_Y::ACharacter_Y()
 	PlayerCameraComp = CreateDefaultSubobject<UCameraComponent>("PlayerCameraComp_Y");
 	SkillsActorComp = CreateDefaultSubobject <USkillsActorComponent>("SkillsActorComp_Y");
 	AttributeComp = CreateDefaultSubobject<UAttributeActorComponent>("AttributeComp_Y");
+	ActionActorComp = CreateDefaultSubobject<UActionActorComp>("ActionActorComp_Y");
 
 	bUseControllerRotationYaw = false;//角色的Yaw不使用玩家控器的Yaw
 	GetCharacterMovement()->bOrientRotationToMovement = true;//运动朝向 旋转
@@ -57,6 +61,7 @@ void ACharacter_Y::BeginPlay()
 			UUserWidget* Widget = GameMode->IsControllerAttWidget(PlayerController);
 			if (Widget != nullptr)
 			{
+
 				
 				return;
 			}
@@ -89,12 +94,21 @@ void ACharacter_Y::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter_Y::StartJump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter_Y::StopJump);
 	PlayerInputComponent->BindAction("Projectile_Spawn", IE_Pressed, this, &ACharacter_Y::magic_Spawn);
+	
+	FName Sprint("Sprint");
+	FInputActionKeyMapping SprintKeyMap(Sprint, EKeys::LeftShift);
+	UGameplayStatics::GetPlayerController(this, 0)->PlayerInput->AddActionMapping(SprintKeyMap);
+	PlayerInputComponent->BindAction(Sprint, IE_Pressed, this, &ACharacter_Y::SatrtSprint);
+	PlayerInputComponent->BindAction(Sprint, IE_Released, this, &ACharacter_Y::StopSprint);
+
+
+
 
 	//单键绑定
 	FInputKeyBinding KeyBind(EKeys::R, IE_Pressed);
 	KeyBind.bConsumeInput = true;
 	KeyBind.bExecuteWhenPaused = false;
-	KeyBind.KeyDelegate.BindDelegate(this->SkillsActorComp, &USkillsActorComponent::Teleportation);
+	KeyBind.KeyDelegate.BindDelegate(this, &ACharacter_Y::Teleportation);
 	PlayerInputComponent->KeyBindings.Add(KeyBind);
 	//end
 	
@@ -150,11 +164,39 @@ void ACharacter_Y::StopJump()
 	bPressedJump = false;
 }
 
+void ACharacter_Y::SatrtSprint()
+{
+	ActionActorComp->StartAction(this, "Sprint");
+}
+
+void ACharacter_Y::StopSprint()
+{
+	ActionActorComp->StopAction(this, "Sprint");
+}
+
 void ACharacter_Y::magic_Spawn()
 {
-	PlayAnimMontage(AnimMontage);
+	ActionActorComp->StartAction(this, "Magic_Projectile");
+}
+void ACharacter_Y::Teleportation()
+{
+	ActionActorComp->StartAction(this, "Teleportation");
+
+	FTimerHandle TimerHand;
+	FTimerDelegate TimerDelegate;
+	TimerDelegate.BindLambda([this]()->void
+		{
+			if (auto* Action = ActionActorComp->FindAction("Teleportation"))
+				{
+					Action->Action( (UObject**) & (this->SkillsActorComp->A_this_ATeleportation));
+					this->SkillsActorComp->Teleportation();
+				}
+		});
+	GetWorld()->GetTimerManager().SetTimer(TimerHand, TimerDelegate,1.0f,false);
+
 	
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &ACharacter_Y::magic_Spawn_Timer, TimerRate);//设置定时器
+	
+
 }
 void ACharacter_Y::magic_Spawn_Timer()
 {
@@ -184,6 +226,9 @@ void ACharacter_Y::magic_Spawn_Timer()
 
 void ACharacter_Y::BlackHole()
 {
+	
+
+
 	static int i = 0;
 	if (!(i%2))
 	{
@@ -193,6 +238,7 @@ void ACharacter_Y::BlackHole()
 	}
 	else
 	{
+		
 		if (SkillsActorComp->A_this_spawnShpere)
 		{
 
@@ -201,8 +247,8 @@ void ACharacter_Y::BlackHole()
 			{
 				SkillsActorComp->A_this_spawnShpere->Destroy();
 				SkillsActorComp->A_this_spawnShpere = nullptr;
-			}
-			SkillsActorComp->BlackHole_Spawn();
+			}	
+			ActionActorComp->StartAction(this, "SpawnBlackHole");
 		}
 	}
 	i++;
@@ -239,9 +285,16 @@ void ACharacter_Y::Interactive()
 	DrawDebugLine(GetWorld(), Start, end, FColor::Red, false, 5.0f, 0, 10.0f);
 }
 
+
+
 UAttributeActorComponent* ACharacter_Y::GetAttributeComp()
 {
 	return AttributeComp;
+}
+
+UCameraComponent* ACharacter_Y::GetCameraComponent()
+{
+	return PlayerCameraComp;
 }
 
 void ACharacter_Y::OnBldVeChanged(AActor* Actor, UAttributeActorComponent* AttributeActorComp, float Newblood_volume, float DelVal)
@@ -251,23 +304,20 @@ void ACharacter_Y::OnBldVeChanged(AActor* Actor, UAttributeActorComponent* Attri
 	{
 		
 			GetMesh()->SetCollisionProfileName("Ragdoll");
-			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+			GetCapsuleComponent()->SetSimulatePhysics(true);
 			GetMesh()->SetAllBodiesSimulatePhysics(true);
-			GetMesh()->SetDrawDebugSkeleton(true);
+			//GetMesh()->SetDrawDebugSkeleton(true);
 			auto* PC = 	Cast<APlayerController>(GetController());
 		if (PC)
 		{
-
-		
+			PC->UnPossess();
 			DisableInput(PC);//禁用输入
-			//GetCapsuleComponent()->colse
-			//SetActorEnableCollision(false);//允许为整个Actor启用/禁用碰撞
-		
 			
-			//SetActorRelativeTransform(GetMesh()->GetComponentTransform());
 		
 			GetWorld()->GetAuthGameMode<AYGameModeBase>()->RebirthRules(PC);
-		
+			
+			//GetMovementComponent()->StopMovementImmediately();
 		}
 	}
 

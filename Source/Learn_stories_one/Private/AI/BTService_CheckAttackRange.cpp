@@ -24,9 +24,34 @@ void UBTService_CheckAttackRange::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 					float Dist = FVector::Distance(TargetActor->GetActorLocation(), AIPawn->GetActorLocation() );
 					bool bWithinRange = Dist < 2000.0f;
 					
-					bool bOfSighto = AIController->LineOfSightTo(TargetActor);//AI是否能看到目标Actor 
-					if (!bOfSighto)
-						BlackboardComp->SetValueAsObject("TargetActor", NULL);
+					bool bOfSighto = AIController->LineOfSightTo(TargetActor);//AI是否能看到目标Actor
+					static bool bOfSightoTimer = false;
+					if (!bOfSighto && !bOfSightoTimer)////失去玩家pawn视野时 有10s存有玩家pawn
+					{
+
+						FTimerDelegate TimerDelegate;
+						TimerDelegate.BindLambda([BlackboardComp]()->void
+							{
+								int* c = (int*)BlackboardComp;
+								UE_LOG(LogTemp, Warning, TEXT("GetWorld()->GetTimerManager().SetTimer(c_TimerHandle, TimerDelegate, 10.0f, false);\
+									bOfSightoTimer = true; "))
+								BlackboardComp->SetValueAsObject("TargetActor", NULL);
+							});
+						GetWorld()->GetTimerManager().SetTimer(c_TimerHandle, TimerDelegate, 10.0f, false);
+						bOfSightoTimer = true;
+						//BlackboardComp->SetValueAsObject("TargetActor", NULL);
+					}
+					else
+					{
+						if(bOfSighto)
+						if (bOfSightoTimer)
+						{
+							GetWorld()->GetTimerManager().ClearTimer(c_TimerHandle);
+							bOfSightoTimer = false;
+						}
+						
+					}
+						
 					BlackboardComp->SetValueAsBool(bAttackRangeKey.SelectedKeyName,(bWithinRange && bOfSighto));
 
 				}

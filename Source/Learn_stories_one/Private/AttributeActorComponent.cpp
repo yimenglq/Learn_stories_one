@@ -11,7 +11,7 @@ UAttributeActorComponent::UAttributeActorComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 	
 	
-	blood_volume = 100;
+	blood_volume =  Maxblood = 100;
 	
 	// ...
 }
@@ -40,6 +40,7 @@ void UAttributeActorComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 void UAttributeActorComponent::ReviseBlood_volume(int InVal)
 {
 	blood_volume += InVal;
+	blood_volume > Maxblood ? blood_volume = Maxblood : NULL;
 	OnBlood_volume_Changed.Broadcast(GetOwner(),this, blood_volume, InVal);
 }
 

@@ -6,7 +6,7 @@
 
 
 
-
+static TAutoConsoleVariable<bool> ConsoleVariable(TEXT("su.Spawn"), true, TEXT("spawn , Timer"), ECVF_Cheat);//控制台变量定义
 
 AYGameModeBase::AYGameModeBase()
 {
@@ -39,6 +39,10 @@ void AYGameModeBase::PostInitializeComponents()
 
 void AYGameModeBase::SpawnInit()
 {
+	if (!ConsoleVariable.GetValueOnGameThread())//控制台变量获取
+	{
+		return;
+	}
 	if (ensure(	c_QueryTemp))
 	{
 		
@@ -93,14 +97,21 @@ void AYGameModeBase::OnDestroyedSpawnFun(AActor* DestroyedActor)
 
 void AYGameModeBase::RebirthRules(APlayerController* RebirthActorPlayerController)
 {
+	
+
 	if (RebirthActorPlayerController)
 	{
-		RebirthActorPlayerController->UnPossess();
+
+		
 
 		FTimerHandle TimerHandle;
-		FTimerDelegate TimerDelegate;
+		FTimerDelegate TimerDelegate;	
+		
+
 		TimerDelegate.BindLambda([this](APlayerController* RebirthActorPlayerController)->void
 			{
+					RebirthActorPlayerController->UnPossess();//解除控制器的Pawn
+		
 					AActor* StartLoc =	FindPlayerStart(RebirthActorPlayerController);
 					RestartPlayerAtPlayerStart(RebirthActorPlayerController, StartLoc);
 

@@ -157,6 +157,13 @@ void AMagic_Projectile_Y::OnCompEndOverlap(UPrimitiveComponent* OverlappedCompon
 void AMagic_Projectile_Y::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	FTimerHandle handle;
+	if (Cast<ACharacter>(OtherActor))
+	{
+		OnCompBeginOverlap(HitComponent, OtherActor, OtherComp, 0, 0, Hit);
+		return;
+	}
+
+		
 	GetWorldTimerManager().SetTimer(handle,this,&AMagic_Projectile_Y::Destroy,0.01f);
 	//DrawDebugString(GetWorld(), GetActorLocation(), FString::Printf(TEXT("AMagic_Projectile_Y::UGameplayStatics::PlaySoundAtLocation:")), nullptr, FColor::Red, 5.0f, true);
 	HitPoint = Hit.ImpactPoint;
@@ -176,7 +183,12 @@ void AMagic_Projectile_Y::Destroy()
 		//UGameplayStatics::PlaySoundAtLocation(GetWorld(), CollidingSound, HitPoint);
 	}
 		
-	this->AActor::Destroy();
+	bool ret = this->AActor::Destroy();
+	if (ret)
+	{
+
+		UE_LOG(LogTemp, Log, TEXT("dada"));
+	}
 	
 }
 

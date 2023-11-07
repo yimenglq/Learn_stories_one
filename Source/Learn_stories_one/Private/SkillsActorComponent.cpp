@@ -97,10 +97,11 @@ void USkillsActorComponent::DrawShpere()
 
 void USkillsActorComponent::Teleportation()
 {
-	FTransform Transform(UGameplayStatics::GetPlayerController(this,0)->GetControlRotation(), GetOwner()->GetActorLocation()+ UGameplayStatics::GetPlayerController(this, 0)->GetControlRotation().Vector()*100);
+
+	/*FTransform Transform(Cast<APawn>(	GetOwner() )->GetControlRotation(), GetOwner()->GetActorLocation() + Cast<APawn>(GetOwner())->GetControlRotation().Vector() * 100);
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	A_this_ATeleportation = GetWorld()->SpawnActor<AActor>(ATeleportation, Transform, SpawnParameters);
+	A_this_ATeleportation = GetWorld()->SpawnActor<AActor>(ATeleportation, Transform, SpawnParameters);*/
 
 
 	FTimerHandle handle;

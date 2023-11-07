@@ -42,6 +42,8 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	class UAttributeActorComponent* c_AttributeActorComp;
+
+	FTimerHandle c_TimerHandle;
 public:
 	UPROPERTY(EditAnywhere,Category = "DIY|UI")
 	FVector	c_UIWorldOffetValue;//ÊÀ½çÆ«ÒÆÖµUI
