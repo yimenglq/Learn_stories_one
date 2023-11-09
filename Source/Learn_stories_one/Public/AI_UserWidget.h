@@ -58,4 +58,7 @@ public:
 	UPROPERTY(BlueprintReadOnly,Category = "DIY|UI");
 	AActor* c_AttachedActor;
 
+
+	/*UPROPERTY(BlueprintReadOnly, Category = "DIY|UI");
+	virtual FReply NativeOnMouseWheel(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent);*/
 };

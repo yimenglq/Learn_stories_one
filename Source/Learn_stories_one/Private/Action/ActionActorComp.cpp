@@ -22,7 +22,7 @@ void UActionActorComp::BeginPlay()
 
 	for (auto ActionClass : c_ActionsClasses)
 	{
-		AddAction(ActionClass);
+		AddAction(GetOwner(), ActionClass);
 	}
 	// ...
 	
@@ -33,11 +33,12 @@ void UActionActorComp::BeginPlay()
 void UActionActorComp::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
+	
+	FString DeBugMessage = GetNameSafe(GetOwner()) + ":" + this->ActiveGameplayTags.ToStringSimple();
+	GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::White,DeBugMessage );
 }
 
-void UActionActorComp::AddAction(TSubclassOf<UYAction> InActionClss)
+void UActionActorComp::AddAction(AActor* IncitingActor,TSubclassOf<UYAction> InActionClss)
 {
 	if (!ensure(InActionClss))
 	{
@@ -47,7 +48,14 @@ void UActionActorComp::AddAction(TSubclassOf<UYAction> InActionClss)
 	if (NewAction)
 	{
 		c_Actions.Add(NewAction);
+		if (NewAction->bStart_Adter_Load)
+		{
+			if(IncitingActor!=nullptr)
+				NewAction->StartAction(IncitingActor);
+
+		}
 	}
+
 
 }
 
@@ -71,7 +79,10 @@ bool UActionActorComp::StartAction(AActor* IncitingActor, FName const InActionNa
 	{
 		if (action->ActionName == InActionName)
 		{
-
+			if ( !action->IsCanStart(IncitingActor))
+			{
+				continue;
+			}
 			action->StartAction(IncitingActor);
 			bRet = true;
 		}
@@ -88,7 +99,8 @@ bool UActionActorComp::StopAction(AActor* IncitingActor, FName const InActionNam
 	{
 		if (action->ActionName == InActionName)
 		{
-
+			if (!action->IsRuning())
+				continue;
 			action->StopAction(IncitingActor);
 			bRet = true;
 		}

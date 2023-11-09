@@ -20,6 +20,8 @@ UYMagicProjectileAction::UYMagicProjectileAction()
 void UYMagicProjectileAction::StartAction_Implementation(AActor* IncitingActor)
 {
 	UE_LOG(LogTemp, Log, TEXT("UYMagicProjectileAction::StartAction_Implementation"), *GetNameSafe(this));
+	Super::StartAction_Implementation(IncitingActor);
+
 	ACharacter_Y* IncitingACharacter = Cast<ACharacter_Y>(IncitingActor);
 	if (ensure(	AnimMontage) && IncitingACharacter)
 	{
@@ -35,6 +37,7 @@ void UYMagicProjectileAction::StartAction_Implementation(AActor* IncitingActor)
 void UYMagicProjectileAction::StopAction_Implementation(AActor* IncitingActor)
 {
 	UE_LOG(LogTemp, Log, TEXT("UYMagicProjectileAction::StartAction_Implementation"), *GetNameSafe(this));
+	Super::StopAction_Implementation(IncitingActor);
 }
 
 

@@ -8,7 +8,7 @@ public class Learn_stories_one : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" , "Slate", "AIModule", "GameplayTasks" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" , "Slate", "AIModule", "GameplayTasks","UMG","GameplayTags" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

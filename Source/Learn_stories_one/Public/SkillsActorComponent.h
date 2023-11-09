@@ -49,8 +49,8 @@ protected:
 	FRotator PlayerControllerRotator;
 	FVector OwnerCameraCompLocation;
 
-	
-
+	UPROPERTY(EditDefaultsOnly,Category ="DIY|Teleportation")
+	FName CollNmaeFile{};
 
 public:
 	UPROPERTY(EditAnywhere,Category = "DIY|Draw")

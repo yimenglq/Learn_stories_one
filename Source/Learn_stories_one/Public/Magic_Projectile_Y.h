@@ -28,7 +28,7 @@ public:
 
 
 private:
-	FVector HitPoint;
+	FVector HitPoint;//撞击位置
 
 protected:
 	UPROPERTY(VisibleAnywhere)
@@ -39,9 +39,10 @@ protected:
 	class UParticleSystemComponent* ParticleSystemComp;//粒子
 
 	UPROPERTY(EditAnywhere,Category = "DIY|Attribute")
-	int Hurt;
-	/*UPROPERTY(BlueprintReadWrite,VisibleAnywhere)
-	class UAudioComponent* AudioComp;*/
+	int Hurt;//伤害
+	UPROPERTY(EditDefaultsOnly, Category = "DIY|Attribute")
+	TSubclassOf<class UYActionEffect> ActionEffect;//弹丸附加的动作效果  比如持续伤害
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DIY|Sound")
 	class USoundBase* LaunchSound;//发射时的声音

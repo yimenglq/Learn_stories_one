@@ -32,7 +32,7 @@ protected:
 	AActor* SpawnMagicProjectile;//弹丸生成的对象
 
 	UPROPERTY(EditDefaultsOnly,Category = "DIY|Range")//射程  发射准星的距离
-	FVector  Range {0,0,0};
+	FVector  Range {10000,0,0};//C++11可这样初始化一个成员变量
 public:
 	UYMagicProjectileAction();
 	

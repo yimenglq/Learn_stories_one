@@ -46,3 +46,8 @@ void UAI_UserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 
 }
+
+//FReply UAI_UserWidget::NativeOnMouseWheel(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+//{
+//	return FReply();
+//}

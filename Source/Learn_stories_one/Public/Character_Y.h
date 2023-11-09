@@ -84,6 +84,7 @@ public:
 
 
 	void magic_Spawn();
+	void magic_Spawned();
 	void Teleportation();
 
 
@@ -96,6 +97,7 @@ public:
 	
 	UAttributeActorComponent* GetAttributeComp();
 	UCameraComponent* GetCameraComponent();
+	UActionActorComp* GetActionActorComp() const;
 
 	friend class UYMagicProjectileAction;
 public:

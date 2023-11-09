@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include"GameplayTagContainer.h"
 #include "YAction.generated.h"
 
 /**
@@ -14,12 +15,38 @@ class LEARN_STORIES_ONE_API UYAction : public UObject
 {
 	GENERATED_BODY()
 
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DIY|Action|Tags")
+	FGameplayTagContainer GrantsTags;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DIY|Action|Tags")
+	FGameplayTagContainer BlokTags;
+
+	bool bIsRuning;//正在运行？
+
 public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "DIY|Action")
+	bool bStart_Adter_Load { false };//加载后即可开始
+
+protected:
+
+	UFUNCTION(BlueprintCallable,Category = "DIY|Action")
+	class	UActionActorComp* GetActionActorComp()const;
+
+public:
+
+
+
 
 	UFUNCTION(BlueprintNativeEvent,Category = "Action")
 	void StartAction(AActor* IncitingActor);
 	UFUNCTION(BlueprintNativeEvent,Category = "Action")
 	void StopAction(AActor* IncitingActor);
+	UFUNCTION(BlueprintNativeEvent,Category = "Action")
+	bool IsCanStart(AActor* IncitingActor);
+	UFUNCTION(BlueprintCallable, Category = "Action")
+	bool IsRuning()const;
+
 	UPROPERTY(EditDefaultsOnly,Category = "Action")
 	FName ActionName;//动作的名称
 

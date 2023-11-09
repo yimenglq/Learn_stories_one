@@ -94,7 +94,8 @@ void ACharacter_Y::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter_Y::StartJump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter_Y::StopJump);
 	PlayerInputComponent->BindAction("Projectile_Spawn", IE_Pressed, this, &ACharacter_Y::magic_Spawn);
-	
+	PlayerInputComponent->BindAction("Projectile_Spawn", IE_Released, this, &ACharacter_Y::magic_Spawned);
+
 	FName Sprint("Sprint");
 	FInputActionKeyMapping SprintKeyMap(Sprint, EKeys::LeftShift);
 	UGameplayStatics::GetPlayerController(this, 0)->PlayerInput->AddActionMapping(SprintKeyMap);
@@ -176,7 +177,13 @@ void ACharacter_Y::StopSprint()
 
 void ACharacter_Y::magic_Spawn()
 {
+
+
 	ActionActorComp->StartAction(this, "Magic_Projectile");
+}
+void ACharacter_Y::magic_Spawned()
+{
+	ActionActorComp->StopAction(this, "Magic_Projectile");
 }
 void ACharacter_Y::Teleportation()
 {
@@ -190,39 +197,16 @@ void ACharacter_Y::Teleportation()
 				{
 					Action->Action( (UObject**) & (this->SkillsActorComp->A_this_ATeleportation));
 					this->SkillsActorComp->Teleportation();
+
 				}
 		});
 	GetWorld()->GetTimerManager().SetTimer(TimerHand, TimerDelegate,1.0f,false);
-
+	ActionActorComp->StopAction(this, "Teleportation");
 	
 	
 
 }
-void ACharacter_Y::magic_Spawn_Timer()
-{
 
-	FVector SpawnLoctaion = GetMesh()->GetSocketLocation("Magic_Spawn");//生成的位置（在骨骼插槽上）
-	FHitResult HitRet;
-	FVector Start = PlayerCameraComp->GetComponentLocation();
-	FVector end = SkillsActorComp->GetCrosshairend();
-	FTransform Transform_Spawn;
-	GetWorld()->LineTraceSingleByProfile(HitRet,Start,end, 
-		Cast<USphereComponent>(FaSeWu.GetDefaultObject()->GetComponentByClass(USphereComponent::StaticClass()))->GetCollisionProfileName());
-	if (HitRet.IsValidBlockingHit())
-	{
-		end = HitRet.ImpactPoint;
-
-	}
-
-	Transform_Spawn = FTransform((end-SpawnLoctaion).Rotation(), SpawnLoctaion);//生成的变换
-	FActorSpawnParameters spawnParams;//生成参数
-	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	spawnParams.Owner = this;
-	spawnParams.Instigator = this;
-	//spawnParams.Name = TEXT("gj");
-	GetWorld()->SpawnActor<AActor>(FaSeWu, Transform_Spawn, spawnParams);//->SetOwner(this);
-	GetWorldTimerManager().ClearTimer(TimerHandle);
-}
 
 void ACharacter_Y::BlackHole()
 {
@@ -249,6 +233,7 @@ void ACharacter_Y::BlackHole()
 				SkillsActorComp->A_this_spawnShpere = nullptr;
 			}	
 			ActionActorComp->StartAction(this, "SpawnBlackHole");
+			ActionActorComp->StopAction(this, "SpawnBlackHole");
 		}
 	}
 	i++;
@@ -295,6 +280,11 @@ UAttributeActorComponent* ACharacter_Y::GetAttributeComp()
 UCameraComponent* ACharacter_Y::GetCameraComponent()
 {
 	return PlayerCameraComp;
+}
+
+UActionActorComp* ACharacter_Y::GetActionActorComp() const
+{
+	return ActionActorComp;
 }
 
 void ACharacter_Y::OnBldVeChanged(AActor* Actor, UAttributeActorComponent* AttributeActorComp, float Newblood_volume, float DelVal)

@@ -11,6 +11,9 @@
 #include"Components\AudioComponent.h"
 #include"Kismet\GameplayStatics.h"
 #include <AI/AICharacter.h>
+#include "Action/ActionActorComp.h"
+#include"Action/YAction.h"
+#include "Action/YActionEffect.h"
 
 
 // Sets default values
@@ -156,13 +159,57 @@ void AMagic_Projectile_Y::OnCompEndOverlap(UPrimitiveComponent* OverlappedCompon
 
 void AMagic_Projectile_Y::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	FTimerHandle handle;
-	if (Cast<ACharacter>(OtherActor))
+	
+	/*if (Cast<ACharacter>(OtherActor))
 	{
 		OnCompBeginOverlap(HitComponent, OtherActor, OtherComp, 0, 0, Hit);
 		return;
+	}*/
+	if (GetOwner() == OtherActor)
+	{
+
+		
+
+		return;
 	}
 
+	live = 0;
+	//SphereComp->SetSimulatePhysics(false);//Ä£ÄâÎïÀí
+	//ProjectileMovementComp->StopMovementImmediately();
+
+	//ParticleSystemComp->SetVisibility(false);
+	//SetActorEnableCollision(false);
+	//AudioComp->Stop();
+	//AudioComp->SetSound(NewSoundBase);
+	////AudioComp->OnAudioFinished.AddDynamic(this, &AMagic_Projectile_Y::Destroy);
+	//AudioComp->Play();
+	//
+	if (auto* Character = Cast<ACharacter_Y>(OtherActor))
+	{
+		UAttributeActorComponent* Attribute = Character->GetAttributeComp();
+		Attribute->ReviseBlood_volume(-Hurt);
+
+	}
+	else
+		if (UAttributeActorComponent* Attribute = Cast < UAttributeActorComponent>(OtherActor->GetComponentByClass(UAttributeActorComponent::StaticClass())))
+		{
+			Attribute->ReviseBlood_volume(-Hurt);
+
+		}
+	if (AAICharacter* AI = Cast<AAICharacter>(OtherActor))
+	{
+		if (ActionEffect)
+		{
+			if (auto* OwnerActor = GetOwner<ACharacter_Y>())
+			{
+				OwnerActor->GetActionActorComp()->AddAction(OtherActor, ActionEffect);
+					
+			}
+		}
+		AI->GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->GetTimeSeconds());
+		AI->GetMesh()->SetScalarParameterValueOnMaterials("HitFlashSpeed", AI->c_AIHitFlashSpeed);
+	}
+	FTimerHandle handle;
 		
 	GetWorldTimerManager().SetTimer(handle,this,&AMagic_Projectile_Y::Destroy,0.01f);
 	//DrawDebugString(GetWorld(), GetActorLocation(), FString::Printf(TEXT("AMagic_Projectile_Y::UGameplayStatics::PlaySoundAtLocation:")), nullptr, FColor::Red, 5.0f, true);

@@ -45,13 +45,28 @@ void USkillsActorComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	
 	if (A_this_spawnShpere)
 	{
-
-		PlayerControllerRotator = UGameplayStatics::GetPlayerController(this, 0)->GetControlRotation();
 		OwnerCameraCompLocation = Cast<UCameraComponent>(GetOwner()->GetComponentByClass(UCameraComponent::StaticClass()))->GetComponentLocation();
+		PlayerControllerRotator =Cast<APawn>(	GetOwner() )->GetControlRotation();
+		FHitResult hit;
+		FVector Endlocation;
+		if(CollNmaeFile!=NAME_None)
+			GetWorld()->LineTraceSingleByProfile(hit, OwnerCameraCompLocation, OwnerCameraCompLocation + PlayerControllerRotator.Vector() * end, CollNmaeFile);
+		
+		if (hit.IsValidBlockingHit())
+		{
+			Endlocation = hit.ImpactPoint;
+		}
+		else
+		{
+			Endlocation = OwnerCameraCompLocation + PlayerControllerRotator.Vector() * end;
+		}
+
+		
+		
 
 		
 
-		A_this_spawnShpere->SetActorLocation(OwnerCameraCompLocation + PlayerControllerRotator.Vector() * end);
+		A_this_spawnShpere->SetActorLocation(Endlocation);
 
 	}
 
@@ -114,6 +129,7 @@ void USkillsActorComponent::Teleportation()
 			{
 				GetOwner()->SetActorLocation(A_this_ATeleportation->GetActorLocation());
 				A_this_ATeleportation->Destroy();
+				A_this_ATeleportation = nullptr;
 			}
 		});
 

@@ -4,7 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+
+#include <GameplayTagContainer.h>
+
 #include "ActionActorComp.generated.h"
+
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -33,8 +37,12 @@ protected:
 	TArray<	class UYAction*> c_Actions;
 
 public:
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "DIY|Tags")
+	FGameplayTagContainer ActiveGameplayTags;
+
+public:
 	UFUNCTION(BlueprintCallable,Category = "DIY|Action")
-	void AddAction(TSubclassOf<UYAction> InActionClss);
+	void AddAction(AActor* IncitingActor,TSubclassOf<UYAction> InActionClss);
 	UFUNCTION(BlueprintCallable, Category = "DIY|Action")
 	void RemvoeAction(FName const InActionName);
 

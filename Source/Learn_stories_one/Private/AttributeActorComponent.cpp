@@ -39,9 +39,11 @@ void UAttributeActorComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 void UAttributeActorComponent::ReviseBlood_volume(int InVal)
 {
-	blood_volume += InVal;
-	blood_volume > Maxblood ? blood_volume = Maxblood : NULL;
-	OnBlood_volume_Changed.Broadcast(GetOwner(),this, blood_volume, InVal);
+	if (blood_volume <= 0)
+		return;
+		blood_volume += InVal;
+		blood_volume > Maxblood ? blood_volume = Maxblood : NULL;
+		OnBlood_volume_Changed.Broadcast(GetOwner(),this, blood_volume, InVal);
 }
 
 //Static Function  start
