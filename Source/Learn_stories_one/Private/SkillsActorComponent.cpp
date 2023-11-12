@@ -86,7 +86,7 @@ void USkillsActorComponent::BlackHole_Spawn()
 	GetWorld()->SpawnActor<AActor>(Skill_1,Transform,SpawnParameters);
 
 	/*UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), 
-		Cast<UParticleSystem>(Skill_1.GetDefaultObject()->GetComponentByClass(UParticleSystem::StaticClass())),Transform);
+		Cast<UParticleSystem>(Skill_1.GetDefaultObject()->GetComponentByClass(UParticleSystem::StaticClass())),Transform); //在世界里 播放粒子特效
 	*/
 }
 

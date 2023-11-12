@@ -45,27 +45,28 @@ protected:
 	float	TimerRate;
 
 	UPROPERTY(EditAnywhere,Category = "DIY|AnimMontage")
-	UAnimMontage*	AnimMontage;
+	UAnimMontage*	AnimMontage;//动画 蒙太奇
 
 	UPROPERTY(VisibleAnywhere)
 	class USkillsActorComponent* SkillsActorComp;
-
-	UPROPERTY(EditAnywhere ,Category = "DIY|Interactive")
-	float Interactive_Line_end;//直线交互距离
+	UPROPERTY(VisibleAnywhere)
+	class	UInteractiveComponent* InteractiveComp;//交互组件
+	
 	
 	
 	UPROPERTY(EditAnywhere, Category = "DIY|UI")
 	TSubclassOf<UUserWidget> CrosshairUI;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	class UAttributeActorComponent* AttributeComp;
+	class UAttributeActorComponent* AttributeComp;//属性组件
 	UPROPERTY(EditAnywhere, Category = "DIY|CameraShake")
 	TSubclassOf<class UCameraShakeBase> CameraShake;
 
 	UPROPERTY(VisibleAnywhere)
-	class UActionActorComp* ActionActorComp;
+	class UActionActorComp* ActionActorComp;//动作模块组件
 	virtual void PostInitializeComponents() override;
 
-	
+	UFUNCTION(Server, Reliable)
+	void Server_Interactive();//服务器运行函数
 
 public:
 
@@ -93,6 +94,8 @@ public:
 	void	BlackHole();
 
 	void	Interactive();
+	
+
 
 	
 	UAttributeActorComponent* GetAttributeComp();

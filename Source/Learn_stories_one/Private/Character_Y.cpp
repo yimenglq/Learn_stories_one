@@ -18,6 +18,8 @@
 #include "GameMode/YGameModeBase.h"
 #include "Action/ActionActorComp.h"
 #include"Action\YAction.h"
+#include"Interactive\InteractiveComponent.h"
+
 
 
 // Sets default values
@@ -30,7 +32,9 @@ ACharacter_Y::ACharacter_Y()
 	SkillsActorComp = CreateDefaultSubobject <USkillsActorComponent>("SkillsActorComp_Y");
 	AttributeComp = CreateDefaultSubobject<UAttributeActorComponent>("AttributeComp_Y");
 	ActionActorComp = CreateDefaultSubobject<UActionActorComp>("ActionActorComp_Y");
+	InteractiveComp = CreateDefaultSubobject<UInteractiveComponent>("InteractiveComp_Y");
 
+	
 	bUseControllerRotationYaw = false;//角色的Yaw不使用玩家控器的Yaw
 	GetCharacterMovement()->bOrientRotationToMovement = true;//运动朝向 旋转
 	PlayerCameraComp->SetupAttachment(SpringArmComp);
@@ -38,7 +42,7 @@ ACharacter_Y::ACharacter_Y()
 	SpringArmComp->bUsePawnControlRotation = true;
 
 	TimerRate = 0.2f;
-	Interactive_Line_end = 100.0f;
+
 }
 
 void ACharacter_Y::PostInitializeComponents()
@@ -52,12 +56,15 @@ void ACharacter_Y::PostInitializeComponents()
 void ACharacter_Y::BeginPlay()
 {
 	Super::BeginPlay();
-	if (CrosshairUI)
+	InteractiveComp->OwerPawn = this;
+	/*if (CrosshairUI)
 	{
-
+		
 		if (APlayerController* PlayerController = GetController<APlayerController>())
 		{
-			AYGameModeBase* GameMode = GetWorld()->GetAuthGameMode<AYGameModeBase>();
+			AYGameModeBase* GameMode =Cast<AYGameModeBase>(	UGameplayStatics::GetGameMode(this));
+			if (!GameMode)
+				return;
 			UUserWidget* Widget = GameMode->IsControllerAttWidget(PlayerController);
 			if (Widget != nullptr)
 			{
@@ -72,7 +79,7 @@ void ACharacter_Y::BeginPlay()
 		}
 			
 
-	}
+	}*/
 }
 
 // Called every frame
@@ -244,30 +251,14 @@ void ACharacter_Y::BlackHole()
 
 void ACharacter_Y::Interactive()
 {
-	FCollisionObjectQueryParams ObjectQueryParams;
-	FHitResult HitRet;
-	FVector Start;
-	FVector end;
-	FRotator Rotator;
-	ObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldDynamic);
-	
-	Start =	GetPawnViewLocation();//眼睛位置
-	Rotator = GetControlRotation();
-	end = Rotator.Vector() * Interactive_Line_end + Start;
-	
-	GetWorld()->LineTraceSingleByObjectType(HitRet, Start, end, ObjectQueryParams);
+	Server_Interactive();
 
-	if (HitRet.IsValidBlockingHit())
-	{
-		if (HitRet.Actor->Implements<UInteractive_Interface>())//是否实现了接口
-		{
-			auto* Interactive_ = Cast<IInteractive_Interface>(HitRet.Actor);
-			Interactive_->Execute_Interactive(HitRet.Actor.Get(),this);
+}
 
-		}
-		
-	}
-	DrawDebugLine(GetWorld(), Start, end, FColor::Red, false, 5.0f, 0, 10.0f);
+void ACharacter_Y::Server_Interactive_Implementation()
+{
+	InteractiveComp->StartInteractive();
+
 }
 
 

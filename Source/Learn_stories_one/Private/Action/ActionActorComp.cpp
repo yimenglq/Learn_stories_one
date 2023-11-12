@@ -3,6 +3,7 @@
 
 #include "Action/ActionActorComp.h"
 #include"Action/YAction.h"
+#include <Character_Y.h>
 
 // Sets default values for this component's properties
 UActionActorComp::UActionActorComp()
@@ -34,7 +35,8 @@ void UActionActorComp::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
-	FString DeBugMessage = GetNameSafe(GetOwner()) + ":" + this->ActiveGameplayTags.ToStringSimple();
+	FString DeBugMessage =FString::Printf(TEXT("%p"), GetOwner())+":" + GetNameSafe(GetOwner()) + ":" + this->ActiveGameplayTags.ToStringSimple()+ FString::Printf(TEXT("  controller:  %p"), Cast<ACharacter_Y>( GetOwner())->GetController() ) \
+		+ FString::Printf(TEXT("  APlayerController:  %p"), Cast<ACharacter_Y>(GetOwner())->GetController<APlayerController>());
 	GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::White,DeBugMessage );
 }
 

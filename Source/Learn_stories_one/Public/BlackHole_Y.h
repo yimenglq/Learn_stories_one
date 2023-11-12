@@ -23,9 +23,9 @@ public:
 
 protected:
 	UPROPERTY(VisibleAnywhere)
-	class	URadialForceComponent* ForceComp;
+	class	URadialForceComponent* ForceComp;//径向力组件
 	UPROPERTY(EditDefaultsOnly,Category = "DIY|ParticleSystem")//EditDefaultsOnly  说明此属性可通过属性窗口进行编辑，但只能在原型上进行。此说明符与所有"可见"说明符均不兼容。
-	class	UParticleSystem* InParticleSystem;
+	class	UParticleSystem* InParticleSystem;//粒子系统
 
 public:
 	UParticleSystem* GetParticleSystem();

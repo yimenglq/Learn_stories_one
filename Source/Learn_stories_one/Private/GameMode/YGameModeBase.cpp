@@ -8,11 +8,16 @@
 
 static TAutoConsoleVariable<bool> ConsoleVariable(TEXT("su.Spawn"), true, TEXT("spawn , Timer"), ECVF_Cheat);//控制台变量定义
 
-AYGameModeBase::AYGameModeBase()
+AYGameModeBase::AYGameModeBase():Super()
 {
+	/*bNetLoadOnClient = false;
+	bPauseable = true;
+	bStartPlayersAsSpectators = false;*/
+
 	c_TimeRate = 2.0f;
 	c_ActorNum = 0;
 	c_ActorRebirthTime = 30.0f;
+
 
 }
 
