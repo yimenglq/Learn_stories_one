@@ -13,6 +13,10 @@ void UYAction::StartAction_Implementation(AActor* IncitingActor)
 	UActionActorComp* comp = GetActionActorComp();
 	comp->ActiveGameplayTags.AppendTags(GrantsTags);
 	bIsRuning = true;
+	if (comp->GetOwner()->HasAuthority())
+	{
+		bIsRuningServer = true;
+	}
 }
 
 void UYAction::StopAction_Implementation(AActor* IncitingActor)
@@ -23,6 +27,11 @@ void UYAction::StopAction_Implementation(AActor* IncitingActor)
 	UActionActorComp* comp = GetActionActorComp();
 	comp->ActiveGameplayTags.RemoveTags(GrantsTags);
 	bIsRuning = false;
+	//·þÎñÆ÷
+	if (comp->GetOwner()->HasAuthority())
+	{
+		bIsRuningServer = false;
+	}
 }
 
 bool UYAction::IsCanStart_Implementation(AActor* IncitingActor)
@@ -85,9 +94,19 @@ UWorld* UYAction::GetWorld()
 }
 
 
+
+
+ void UYAction::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	 Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+
+	 DOREPLIFETIME(UYAction, bIsRuningServer);
+}
+
 void UYAction::OnRep_IsRuning()
 {
-	if (bIsRuning)
+	if (bIsRuningServer)
 	{
 		StartAction(nullptr);
 	}
@@ -97,12 +116,4 @@ void UYAction::OnRep_IsRuning()
 	}
 
 
-}
-
- void UYAction::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
-{
-	 Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-
-	 DOREPLIFETIME(UYAction, bIsRuning);
 }

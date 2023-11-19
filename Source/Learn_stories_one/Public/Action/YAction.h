@@ -21,8 +21,10 @@ protected:
 	FGameplayTagContainer GrantsTags;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DIY|Action|Tags")
 	FGameplayTagContainer BlokTags;
-	UPROPERTY(ReplicatedUsing = "OnRep_IsRuning")
+	//UPROPERTY(ReplicatedUsing = "OnRep_IsRuning")
 	bool bIsRuning;//正在运行？
+	UPROPERTY(ReplicatedUsing = "OnRep_IsRuning")
+	bool bIsRuningServer;//服务器端正在运行？
 	
 	UFUNCTION()
 	void OnRep_IsRuning();

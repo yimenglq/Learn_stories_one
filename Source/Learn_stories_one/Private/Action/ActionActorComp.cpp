@@ -124,8 +124,11 @@ bool UActionActorComp::StartAction(AActor* IncitingActor, FName const InActionNa
 			{
 				ServerStartAction(IncitingActor, InActionName);
 			}
-			
+			else
+			{
 				action->StartAction(IncitingActor);
+			}
+				//action->StartAction(IncitingActor);
 			
 			
 			bRet = true;
@@ -150,8 +153,12 @@ bool UActionActorComp::StopAction(AActor* IncitingActor, FName const InActionNam
 			{
 				ServerStopAction(IncitingActor, InActionName);
 			}
+			else
+			{
+				action->StopAction(IncitingActor);
+			}
 			
-			action->StopAction(IncitingActor);
+				
 			
 			
 			bRet = true;
