@@ -33,8 +33,9 @@ protected:
 	UPROPERTY(EditAnywhere,Category="DIY|ActionClass")
 	TArray<	TSubclassOf	<class UYAction>> c_ActionsClasses;//所有动作类
 
-	UPROPERTY()
+	UPROPERTY(Replicated)//该变量 复制
 	TArray<	class UYAction*> c_Actions;
+	
 
 public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "DIY|Tags")
@@ -45,10 +46,23 @@ public:
 	void AddAction(AActor* IncitingActor,TSubclassOf<UYAction> InActionClss);
 	UFUNCTION(BlueprintCallable, Category = "DIY|Action")
 	void RemvoeAction(FName const InActionName);
-
+	UFUNCTION(BlueprintCallable, Category = "DIY|Action")
 	bool StartAction(AActor* IncitingActor, FName const InActionName);
-
+	UFUNCTION(BlueprintCallable, Category = "DIY|Action")
 	bool StopAction(AActor* IncitingActor, FName const InActionName);
+	
+	UFUNCTION(Server,Reliable)
+	void ServerStartAction(AActor* IncitingActor, FName const InActionName);
+	UFUNCTION(Server, Reliable)
+	void ServerStopAction(AActor* IncitingActor, FName const InActionName);
 
 	UYAction* FindAction(FName const InActionName);
+
+
+public:
+
+	 bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
+
+
+
 };

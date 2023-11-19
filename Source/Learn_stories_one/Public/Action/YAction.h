@@ -21,9 +21,11 @@ protected:
 	FGameplayTagContainer GrantsTags;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DIY|Action|Tags")
 	FGameplayTagContainer BlokTags;
-
+	UPROPERTY(ReplicatedUsing = "OnRep_IsRuning")
 	bool bIsRuning;//正在运行？
-
+	
+	UFUNCTION()
+	void OnRep_IsRuning();
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "DIY|Action")
 	bool bStart_Adter_Load { false };//加载后即可开始
@@ -38,9 +40,9 @@ public:
 
 
 
-	UFUNCTION(BlueprintNativeEvent,Category = "Action")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Action")
 	void StartAction(AActor* IncitingActor);
-	UFUNCTION(BlueprintNativeEvent,Category = "Action")
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable,Category = "Action")
 	void StopAction(AActor* IncitingActor);
 	UFUNCTION(BlueprintNativeEvent,Category = "Action")
 	bool IsCanStart(AActor* IncitingActor);
@@ -53,5 +55,12 @@ public:
 	UWorld*	GetWorld();
 
 	virtual void Action(UObject** out) {}
+
+	 bool IsSupportedForNetworking() const override
+
+	{
+		 return true;
+	}
+
 
 };

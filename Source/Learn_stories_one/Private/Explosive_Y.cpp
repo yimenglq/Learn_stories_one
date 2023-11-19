@@ -5,7 +5,7 @@
 
 #include "PhysicsEngine/RadialForceComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include <Magic_Projectile_Y.h>
+#include "Magic_Projectile/Magic_Projectile_Y.h"
 
 // Sets default values
 AExplosive_Y::AExplosive_Y()

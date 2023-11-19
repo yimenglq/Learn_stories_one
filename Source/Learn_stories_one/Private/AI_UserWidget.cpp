@@ -10,10 +10,10 @@
 
 UAI_UserWidget::UAI_UserWidget(const FObjectInitializer& ObjectInitializer):UUserWidget(ObjectInitializer)
 {
-	c_OldBlood = c_NewBlood = 0;
+	c_OldBlood = 100;
+	c_NewBlood = 0;
 	c_WorldOffetValue = { 0,0,0 };
 	//c_bOldBloodInit = false;
-
 	
 }
 

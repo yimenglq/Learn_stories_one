@@ -6,7 +6,7 @@
 #include"Perception\PawnSensingComponent.h"
 #include"BehaviorTree\BlackboardComponent.h"
 #include"Components\CapsuleComponent.h"
-#include <Magic_Projectile_Y.h>
+#include "Magic_Projectile/Magic_Projectile_Y.h"
 #include <Kismet/GameplayStatics.h>
 #include"Blueprint\UserWidget.h"
 #include "AttributeActorComponent.h"

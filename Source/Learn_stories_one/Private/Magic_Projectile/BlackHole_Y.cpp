@@ -1,16 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BlackHole_Y.h"
+#include "Magic_Projectile/BlackHole_Y.h"
 #include"Particles\ParticleSystemComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
 #include "PhysicsEngine/RadialForceComponent.h"
 #include <DrawDebugHelpers.h>
+#include <Kismet/GameplayStatics.h>
 
-ABlackHole_Y::ABlackHole_Y():Super::AMagic_Projectile_Y()
+ABlackHole_Y::ABlackHole_Y():Super::AMagic_Projectile_Base()
 {
 	ProjectileMovementComp->InitialSpeed = 500.0f;
+
 	ForceComp = CreateDefaultSubobject<URadialForceComponent>("ForceComp_Y");
 	ForceComp->SetupAttachment(RootComponent);
 	
@@ -21,6 +23,15 @@ ABlackHole_Y::ABlackHole_Y():Super::AMagic_Projectile_Y()
 
 }
 
+void ABlackHole_Y::BeginPlay()
+{
+	Super::BeginPlay();
+	if (LaunchSound)
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), LaunchSound, GetActorLocation(), (LaunchSound->GetVolumeMultiplier()), (LaunchSound->GetPitchMultiplier()),
+			0.0f, (USoundAttenuation*)LaunchSound->AttenuationSettings, (USoundConcurrency*)LaunchSound->SoundConcurrencySettings_DEPRECATED); //²¥·Å·¢ÉäÉùÒô
+}
+
+
 void ABlackHole_Y::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -28,6 +39,7 @@ void ABlackHole_Y::Tick(float DeltaTime)
 	ForceComp->FireImpulse();
 
 }
+
 
 
 

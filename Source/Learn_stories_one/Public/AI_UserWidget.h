@@ -55,7 +55,7 @@ public:
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime)override;
 
-	UPROPERTY(BlueprintReadOnly,Category = "DIY|UI");
+	UPROPERTY(BlueprintReadOnly,Category = "DIY|UI" ,meta = (ExposeOnSpawn = true));
 	AActor* c_AttachedActor;
 
 

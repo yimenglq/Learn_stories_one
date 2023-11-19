@@ -8,12 +8,15 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnBlood_volume_Changed, AActor*, Actor, UAttributeActorComponent*, AttributeActorComp, float, Newblood_volume ,float, DelVal);
 
+/*
+	属性组件类
+*/
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class LEARN_STORIES_ONE_API UAttributeActorComponent : public UActorComponent
 {
 	GENERATED_BODY()
-
+	
 public:	
 	// Sets default values for this component's properties
 	UAttributeActorComponent();
@@ -30,10 +33,16 @@ public:
 		
 
 protected:
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "DIY|Attribute")//暴露给蓝图  和给编辑器修改
-		int blood_volume;
-	UPROPERTY(BlueprintReadOnly, EditAnywhere , Category = "DIY|Attribute")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere,Replicated, Category = "DIY|Attribute")//暴露给蓝图  和给编辑器修改
+		int blood_volume;//当前血量
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated, Category = "DIY|Attribute")
 		int Maxblood;//最大血量
+
+protected:
+	//RPC
+	UFUNCTION(NetMulticast,Unreliable)
+	void MulticastBoloodChanged(AActor* InstigatorActor, float NewBlood , float Delta );
+
 public:
 	UFUNCTION(BlueprintCallable,Category = "DIY|Attribute", meta = (GetAttributeActorComp))
 	static UAttributeActorComponent* GetAttributeActorComponent(AActor* InActor);
@@ -50,7 +59,9 @@ public:
 	void	GetBlood_volume(int& OutVal);
 	
 	UFUNCTION(BlueprintCallable, Category = "DIY|Attribute")
-	bool IsAlive();
+	bool IsAlive();//是否存活 当前血量是否大于零
+
+
 
 
 

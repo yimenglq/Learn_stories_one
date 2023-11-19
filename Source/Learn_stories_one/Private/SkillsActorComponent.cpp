@@ -2,11 +2,12 @@
 
 
 #include "SkillsActorComponent.h"
-#include "BlackHole_Y.h"
+
 #include <Kismet/GameplayStatics.h>
 #include <Camera/CameraComponent.h>
 #include"Particles\ParticleSystemComponent.h"
 #include <PhysicsEngine/RadialForceComponent.h>
+#include "Magic_Projectile/BlackHole_Y.h"
 
 // Sets default values for this component's properties
 USkillsActorComponent::USkillsActorComponent()

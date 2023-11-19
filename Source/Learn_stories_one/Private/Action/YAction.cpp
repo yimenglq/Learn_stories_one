@@ -3,6 +3,7 @@
 
 #include "Action/YAction.h"
 #include <Action/ActionActorComp.h>
+#include <Net/UnrealNetwork.h>
 
 void UYAction::StartAction_Implementation(AActor* IncitingActor)
 {
@@ -36,9 +37,23 @@ bool UYAction::IsCanStart_Implementation(AActor* IncitingActor)
 	return true;;
 }
 
+
+
 UActionActorComp* UYAction::GetActionActorComp() const
 {
-	return Cast<UActionActorComp>(GetOuter());
+	if (auto* actor = Cast<AActor>(GetOuter()))
+	{
+		UActionActorComp* comp =	Cast<UActionActorComp>( actor->GetComponentByClass(UActionActorComp::StaticClass()) );
+		if (comp)
+		{
+			return comp;
+		}
+
+	}
+	
+	return	Cast<UActionActorComp>(GetOuter());
+	
+
 }
 
 
@@ -56,6 +71,10 @@ UWorld* UYAction::GetWorld()
 	{
 		return	ActionWorld->GetWorld();
 	}
+	else if (auto* ActionWorld2 = Cast<AActor>(GetOuter()))
+	{
+		return ActionWorld2->GetWorld();
+	}
 	else
 	{
 		return nullptr;
@@ -63,4 +82,27 @@ UWorld* UYAction::GetWorld()
 
 
 	
+}
+
+
+void UYAction::OnRep_IsRuning()
+{
+	if (bIsRuning)
+	{
+		StartAction(nullptr);
+	}
+	else
+	{
+		StopAction(nullptr);
+	}
+
+
+}
+
+ void UYAction::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	 Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+
+	 DOREPLIFETIME(UYAction, bIsRuning);
 }

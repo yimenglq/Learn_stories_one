@@ -4,6 +4,7 @@
 #include "TreasureChestsActor.h"
 #include"Components\TimelineComponent.h"
 #include"Curves\CurveFloat.h"
+#include <Net/UnrealNetwork.h>
 
 
 // Sets default values
@@ -43,6 +44,8 @@ ATreasureChestsActor::ATreasureChestsActor()
 	//OnTimelineFloat.BindUFunction(this, "timeLinefunion");//这个也可以
 	TimeLineComp->AddInterpFloat(CurveFloat, OnTimelineFloat);//把曲线和调用函数加载入时间轴
 	
+
+	SetReplicates(true);
 }
 
 // Called when the game starts or when spawned
@@ -60,19 +63,14 @@ void ATreasureChestsActor::Tick(float DeltaTime)
 
 }
 
+
+
 void ATreasureChestsActor::Interactive_Implementation(APawn* InOwPawn)
 {
-	static bool bOpen = 0;
-	if (!bOpen)
-	{
-		TimeLineComp->Play();//播放时间轴
-		bOpen = 1;
-	}
-	else
-	{
-		TimeLineComp->Reverse();//反向播放
-		bOpen = 0;
-	}
+
+	
+	bLidOpened = !bLidOpened;
+	OnRep_LidOpened();
 }
 
 void ATreasureChestsActor::timeLinefunion(float Output)//时间轴调用函数
@@ -83,4 +81,29 @@ void ATreasureChestsActor::timeLinefunion(float Output)//时间轴调用函数
 	StaticMeshCompLid->SetRelativeRotation(FMath::Lerp(FRotator(0, 0, 0), FRotator(LidPitch, LidYaw, LidRoll), Output));
 }
 
+void ATreasureChestsActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ATreasureChestsActor, bLidOpened);
+	//DOREPLIFETIME(ATreasureChestsActor, TimeLineComp);
 
+}
+void ATreasureChestsActor::OnRep_LidOpened()
+{
+	//static bool bOpen = 0;
+	//if (!bOpen)
+	//{
+	//	TimeLineComp->Play();//播放时间轴
+	//	bOpen = 1;
+	//}
+	//else
+	//{
+	//	TimeLineComp->Reverse();//反向播放
+	//	bOpen = 0;
+	//}
+
+	bLidOpened ? LidRoll = 90 : LidRoll = 0;
+	StaticMeshCompLid->SetRelativeRotation(FRotator(0,0, LidRoll) );
+
+
+}

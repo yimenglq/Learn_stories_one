@@ -19,6 +19,7 @@
 #include "Action/ActionActorComp.h"
 #include"Action\YAction.h"
 #include"Interactive\InteractiveComponent.h"
+#include <Magic_Projectile/Magic_Projectile_Y.h>
 
 
 
@@ -42,6 +43,7 @@ ACharacter_Y::ACharacter_Y()
 	SpringArmComp->bUsePawnControlRotation = true;
 
 	TimerRate = 0.2f;
+	GetCapsuleComponent()->BodyInstance.bNotifyRigidBodyCollision = true;//模拟命中事件
 
 }
 
@@ -50,6 +52,8 @@ void ACharacter_Y::PostInitializeComponents()
 	Super::PostInitializeComponents();
 	AttributeComp->OnBlood_volume_Changed.AddDynamic(this, &ACharacter_Y::OnBldVeChanged);
 	this->GetCapsuleComponent()->OnComponentBeginOverlap.AddUniqueDynamic(this, &ACharacter_Y::OnCapsuleCompOverlap);
+	this->GetCapsuleComponent()->OnComponentHit.AddUniqueDynamic(this, &ACharacter_Y::OnCompHit);
+
 }
 
 // Called when the game starts or when spawned
@@ -258,7 +262,7 @@ void ACharacter_Y::Interactive()
 void ACharacter_Y::Server_Interactive_Implementation()
 {
 	InteractiveComp->StartInteractive();
-
+	
 }
 
 
@@ -284,20 +288,23 @@ void ACharacter_Y::OnBldVeChanged(AActor* Actor, UAttributeActorComponent* Attri
 	if (Newblood_volume <= 0.0f && DelVal <= 0.0f)
 	{
 		
-			GetMesh()->SetCollisionProfileName("Ragdoll");
+			/*GetMesh()->SetCollisionProfileName("Ragdoll");
 			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 			GetCapsuleComponent()->SetSimulatePhysics(true);
-			GetMesh()->SetAllBodiesSimulatePhysics(true);
-			//GetMesh()->SetDrawDebugSkeleton(true);
+			GetMesh()->SetAllBodiesSimulatePhysics(true);*/
+			
 			auto* PC = 	Cast<APlayerController>(GetController());
 		if (PC)
 		{
 			PC->UnPossess();
 			DisableInput(PC);//禁用输入
-			
-		
-			GetWorld()->GetAuthGameMode<AYGameModeBase>()->RebirthRules(PC);
-			
+			if (GetLocalRole() == ENetRole::ROLE_Authority)//本地计算机对执行组件的控制程度。
+			{
+				//服务器端运行
+
+
+				GetWorld()->GetAuthGameMode<AYGameModeBase>()->RebirthRules(PC);
+			}
 			//GetMovementComponent()->StopMovementImmediately();
 		}
 	}
@@ -314,24 +321,39 @@ void ACharacter_Y::OnCapsuleCompOverlap(UPrimitiveComponent* OverlappedComponent
 	}
 	if (ensureMsgf(CameraShake, TEXT("erro 相机抖动为空.")))
 	{
-
-	//镜头抖动
-		if (auto* PlayerController = GetController<APlayerController>())
-		{
-
-
-			PlayerController -> ClientPlayCameraShake(CameraShake);
 		
+		ClientStartCameraShake();
+	
 		//可触发式延迟
 		UKismetSystemLibrary::RetriggerableDelay(this, 0.2f, FLatentActionInfo(0,0,TEXT("ClientStopCameraShake"),this));
-		}
+		
 	}
 
+}
+
+void ACharacter_Y::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+
+	
+	if(Cast<AMagic_Projectile_Y>(OtherActor))
+	 OnCapsuleCompOverlap(HitComponent,OtherActor,OtherComp,0,0,Hit);
 }
 
 void ACharacter_Y::ClientStopCameraShake()
 {
 		//关闭镜头抖动
-		GetController<APlayerController>()->ClientStopCameraShake(CameraShake);
+	if(auto* PlayerController = GetController<APlayerController>())
+		PlayerController->ClientStopCameraShake(CameraShake);
+}
+
+void ACharacter_Y::ClientStartCameraShake()
+{
+	//镜头抖动
+	if (auto* PlayerController = GetController<APlayerController>())
+	{
+
+
+		PlayerController->ClientPlayCameraShake(CameraShake);
+	}
 }
 

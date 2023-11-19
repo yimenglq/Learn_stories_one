@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include"Magic_Projectile/Magic_Projectile_Base.h"
 #include "Magic_Projectile_Y.generated.h"
 
-
 UCLASS()
-class LEARN_STORIES_ONE_API AMagic_Projectile_Y : public AActor
+class LEARN_STORIES_ONE_API AMagic_Projectile_Y : public AMagic_Projectile_Base
 {
 	GENERATED_BODY()
 	
@@ -31,12 +31,12 @@ private:
 	FVector HitPoint;//撞击位置
 
 protected:
-	UPROPERTY(VisibleAnywhere)
-	class USphereComponent* SphereComp;//球形碰撞
-	UPROPERTY(VisibleAnywhere)
-	class UProjectileMovementComponent*  ProjectileMovementComp;//球形移动
-	UPROPERTY(VisibleAnywhere)
-	class UParticleSystemComponent* ParticleSystemComp;//粒子
+	//UPROPERTY(VisibleAnywhere)
+	//class USphereComponent* SphereComp;//球形碰撞
+	//UPROPERTY(VisibleAnywhere)
+	//class UProjectileMovementComponent*  ProjectileMovementComp;//球形移动
+	//UPROPERTY(VisibleAnywhere)
+	//class UParticleSystemComponent* ParticleSystemComp;//粒子
 
 	UPROPERTY(EditAnywhere,Category = "DIY|Attribute")
 	int Hurt;//伤害
@@ -44,10 +44,10 @@ protected:
 	TSubclassOf<class UYActionEffect> ActionEffect;//弹丸附加的动作效果  比如持续伤害
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DIY|Sound")
-	class USoundBase* LaunchSound;//发射时的声音
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = "DIY|Sound")
-	class USoundBase* CollidingSound;//碰撞时的声音
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DIY|Sound")
+	//class USoundBase* LaunchSound;//发射时的声音
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = "DIY|Sound")
+	//class USoundBase* CollidingSound;//碰撞时的声音
 
 
 	UFUNCTION()

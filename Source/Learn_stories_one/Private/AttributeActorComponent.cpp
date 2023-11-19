@@ -2,6 +2,7 @@
 
 
 #include "AttributeActorComponent.h"
+#include <Net/UnrealNetwork.h>
 
 // Sets default values for this component's properties
 UAttributeActorComponent::UAttributeActorComponent()
@@ -13,6 +14,9 @@ UAttributeActorComponent::UAttributeActorComponent()
 	
 	blood_volume =  Maxblood = 100;
 	
+
+	//SetIsReplicated(true);
+	SetIsReplicatedByDefault(true);
 	// ...
 }
 
@@ -35,7 +39,18 @@ void UAttributeActorComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	// ...
 }
 
+void UAttributeActorComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UAttributeActorComponent, blood_volume);
+	DOREPLIFETIME(UAttributeActorComponent, Maxblood);
+	//DOREPLIFETIME_CONDITION(UAttributeActorComponent, Maxblood, COND_InitialOnly);
+}
+void UAttributeActorComponent::MulticastBoloodChanged_Implementation(AActor* InstigatorActor, float NewBlood, float Delta)
+{
 
+	OnBlood_volume_Changed.Broadcast(InstigatorActor, this, NewBlood, Delta);
+}
 
 void UAttributeActorComponent::ReviseBlood_volume(int InVal)
 {
@@ -43,8 +58,11 @@ void UAttributeActorComponent::ReviseBlood_volume(int InVal)
 		return;
 		blood_volume += InVal;
 		blood_volume > Maxblood ? blood_volume = Maxblood : NULL;
-		OnBlood_volume_Changed.Broadcast(GetOwner(),this, blood_volume, InVal);
+		//OnBlood_volume_Changed.Broadcast(GetOwner(),this, blood_volume, InVal);
+		MulticastBoloodChanged(GetOwner(), blood_volume, InVal);
 }
+
+
 
 //Static Function  start
 UAttributeActorComponent* UAttributeActorComponent::GetAttributeActorComponent(AActor* InActor)

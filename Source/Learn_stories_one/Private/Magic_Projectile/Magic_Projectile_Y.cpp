@@ -1,7 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "Magic_Projectile_Y.h"
+#include "Magic_Projectile/Magic_Projectile_Y.h"
 #include"Particles\ParticleSystemComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
@@ -21,8 +19,7 @@ AMagic_Projectile_Y::AMagic_Projectile_Y()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-	SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComp_Y");
-	RootComponent = SphereComp;
+	
 	///////////SphereComponents->SetCollisionObjectType(ECC_worldDynamic);
 
 	SphereComp->SetCollisionProfileName("Projectile");//设置物理碰撞配置文件
@@ -34,23 +31,10 @@ AMagic_Projectile_Y::AMagic_Projectile_Y()
 	SphereComp->BodyInstance.bNotifyRigidBodyCollision = true;//模拟命中事件
 	SphereComp->SetSphereRadius(7.0f);//设置半径
 
-	ParticleSystemComp = CreateDefaultSubobject<UParticleSystemComponent>("ParticleSystemComp_Y");
-	ParticleSystemComp->SetupAttachment(SphereComp);
+	
 
-	ProjectileMovementComp = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovementComp_Y");
+	
 
-	//AudioComp = CreateDefaultSubobject<UAudioComponent>("AudioComp_Y");
-	//AudioComp->SetupAttachment(RootComponent);
-
-	ProjectileMovementComp->InitialSpeed = 1000.0f;
-	ProjectileMovementComp->bRotationFollowsVelocity = true;
-	ProjectileMovementComp->bInitialVelocityInLocalSpace = true;
-	ProjectileMovementComp->ProjectileGravityScale = 0.0f;
-
-	/*SphereComp->OnComponentBeginOverlap.AddDynamic(this, &AMagic_Projectile_Y::OnCompBeginOverlap);
-	SphereComp->OnComponentHit.AddDynamic(this, &AMagic_Projectile_Y::OnCompHit);
-	SphereComp->OnComponentEndOverlap.AddDynamic(this, &AMagic_Projectile_Y::OnCompEndOverlap);*/
-	//AudioComp->OnAudioFinished.AddDynamic(this, &AMagic_Projectile_Y::Destroy);
 	
 	live = 1;
 	Hurt = 20;
@@ -74,7 +58,7 @@ void AMagic_Projectile_Y::BeginPlay()
 	Super::BeginPlay();
 	if(LaunchSound)
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), LaunchSound, GetActorLocation(), (LaunchSound->GetVolumeMultiplier()), (LaunchSound->GetPitchMultiplier()),
-		0.0f, (USoundAttenuation*)LaunchSound->AttenuationSettings, (USoundConcurrency*)LaunchSound->SoundConcurrencySettings_DEPRECATED);
+		0.0f, (USoundAttenuation*)LaunchSound->AttenuationSettings, (USoundConcurrency*)LaunchSound->SoundConcurrencySettings_DEPRECATED); //播放发射声音
 }
 
 
@@ -188,6 +172,7 @@ void AMagic_Projectile_Y::OnCompHit(UPrimitiveComponent* HitComponent, AActor* O
 	{
 		UAttributeActorComponent* Attribute = Character->GetAttributeComp();
 		Attribute->ReviseBlood_volume(-Hurt);
+		Character->GetActionActorComp()->AddAction(OtherActor, ActionEffect);
 
 	}
 	else
@@ -211,7 +196,7 @@ void AMagic_Projectile_Y::OnCompHit(UPrimitiveComponent* HitComponent, AActor* O
 	}
 	FTimerHandle handle;
 		
-	GetWorldTimerManager().SetTimer(handle,this,&AMagic_Projectile_Y::Destroy,0.01f);
+	//GetWorldTimerManager().SetTimer(handle,this,&AMagic_Projectile_Y::Destroy,0.03f);
 	//DrawDebugString(GetWorld(), GetActorLocation(), FString::Printf(TEXT("AMagic_Projectile_Y::UGameplayStatics::PlaySoundAtLocation:")), nullptr, FColor::Red, 5.0f, true);
 	HitPoint = Hit.ImpactPoint;
 }

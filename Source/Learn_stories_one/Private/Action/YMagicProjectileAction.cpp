@@ -26,6 +26,9 @@ void UYMagicProjectileAction::StartAction_Implementation(AActor* IncitingActor)
 	if (ensure(	AnimMontage) && IncitingACharacter)
 	{
 		IncitingACharacter->PlayAnimMontage(AnimMontage);
+		
+		if (!IncitingActor->HasAuthority())
+			return;
 		FTimerDelegate TimerDelegate;
 		TimerDelegate.BindUObject(this, &UYMagicProjectileAction::MagicProjectileSpawn, IncitingACharacter);
 

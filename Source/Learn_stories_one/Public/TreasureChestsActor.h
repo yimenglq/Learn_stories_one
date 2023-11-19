@@ -36,7 +36,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "DIY|Lid")
 	float LidRoll;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere,Replicated)
 	class UTimelineComponent* TimeLineComp;
 
 	UPROPERTY(VisibleAnywhere)
@@ -44,10 +44,18 @@ protected:
 
 	
 
+	UPROPERTY(ReplicatedUsing = "OnRep_LidOpened", BlueprintReadOnly)
+	bool bLidOpened;//打开盖子
+	
+	UFUNCTION()
+	void OnRep_LidOpened();// bLidOpened改变时触发 打开盖子时的触发函数  客户端自动触发  服务器需要在服务器运行函数中
+
 public:
 
 	void	Interactive_Implementation(APawn* InOwPawn)override;
 
 	UFUNCTION()
 	void timeLinefunion(float Output);
+
+	virtual	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };
