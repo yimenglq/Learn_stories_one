@@ -25,7 +25,10 @@ protected:
 	bool bIsRuning;//正在运行？
 	UPROPERTY(ReplicatedUsing = "OnRep_IsRuning")
 	bool bIsRuningServer;//服务器端正在运行？
-	
+	UPROPERTY(Replicated)
+	AActor* c_IncitingActor;
+
+
 	UFUNCTION()
 	void OnRep_IsRuning();
 public:

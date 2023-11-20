@@ -7,6 +7,7 @@
 
 void UYAction::StartAction_Implementation(AActor* IncitingActor)
 {
+	
 	if (IsRuning())
 			return;
 	UE_LOG(LogTemp, Log, TEXT("UYAction::StartAction_Implementation"), *GetNameSafe(this));
@@ -15,12 +16,15 @@ void UYAction::StartAction_Implementation(AActor* IncitingActor)
 	bIsRuning = true;
 	if (comp->GetOwner()->HasAuthority())
 	{
+		if (c_IncitingActor != IncitingActor)
+			c_IncitingActor = IncitingActor;
 		bIsRuningServer = true;
 	}
 }
 
 void UYAction::StopAction_Implementation(AActor* IncitingActor)
 {
+	
 	UE_LOG(LogTemp, Log, TEXT("UYAction::StopAction_Implementation"), *GetNameSafe(this));
 	ensureAlways(bIsRuning);
 
@@ -30,6 +34,8 @@ void UYAction::StopAction_Implementation(AActor* IncitingActor)
 	//·þÎñÆ÷
 	if (comp->GetOwner()->HasAuthority())
 	{
+		if (c_IncitingActor != IncitingActor)
+			c_IncitingActor = IncitingActor;
 		bIsRuningServer = false;
 	}
 }
@@ -102,17 +108,18 @@ UWorld* UYAction::GetWorld()
 
 
 	 DOREPLIFETIME(UYAction, bIsRuningServer);
+	 DOREPLIFETIME(UYAction, c_IncitingActor);
 }
 
 void UYAction::OnRep_IsRuning()
 {
 	if (bIsRuningServer)
 	{
-		StartAction(nullptr);
+		StartAction(c_IncitingActor);
 	}
 	else
 	{
-		StopAction(nullptr);
+		StopAction(c_IncitingActor);
 	}
 
 

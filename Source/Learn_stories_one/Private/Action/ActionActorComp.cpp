@@ -202,6 +202,8 @@ UYAction* UActionActorComp::FindAction(FName const InActionName)
 
 bool UActionActorComp::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
 {
+	//UObject子对象复制函数 这个是固定的
+
 	bool ret = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
 
 	if(GetOwner()->HasAuthority())

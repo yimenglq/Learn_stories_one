@@ -22,3 +22,10 @@ void AYPlayerController::BeginPlay()
 		}
 
 }
+
+void AYPlayerController::SetPawn(APawn* InPawn)
+{
+	Super::SetPawn(InPawn);
+
+	OnSetPawn.Broadcast(InPawn);
+}

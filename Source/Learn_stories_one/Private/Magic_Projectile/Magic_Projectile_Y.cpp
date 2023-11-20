@@ -168,11 +168,17 @@ void AMagic_Projectile_Y::OnCompHit(UPrimitiveComponent* HitComponent, AActor* O
 	////AudioComp->OnAudioFinished.AddDynamic(this, &AMagic_Projectile_Y::Destroy);
 	//AudioComp->Play();
 	//
+
 	if (auto* Character = Cast<ACharacter_Y>(OtherActor))
 	{
 		UAttributeActorComponent* Attribute = Character->GetAttributeComp();
-		Attribute->ReviseBlood_volume(-Hurt);
-		Character->GetActionActorComp()->AddAction(OtherActor, ActionEffect);
+		if (Character->HasAuthority())
+		{
+			
+			Attribute->ReviseBlood_volume(-Hurt);
+			Character->GetActionActorComp()->AddAction(OtherActor, ActionEffect);
+		}
+		
 
 	}
 	else

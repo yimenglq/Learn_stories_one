@@ -34,7 +34,7 @@ protected:
 	TArray<	TSubclassOf	<class UYAction>> c_ActionsClasses;//所有动作类
 
 	UPROPERTY(Replicated)//该变量 复制
-	TArray<	class UYAction*> c_Actions;
+	TArray<	class UYAction*> c_Actions;//类对象  需要使用子对象复制函数
 	
 
 public:

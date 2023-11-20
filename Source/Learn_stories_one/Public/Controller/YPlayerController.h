@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "YPlayerController.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNewPawn, APawn*, NewPawn);
 /**
  * 
  */
@@ -25,7 +26,10 @@ protected:
 	TSubclassOf<class UUserWidget> MainUIClass;//界面ui
 	class UUserWidget* MainUIIns;//界面ui实例
 
+public:
+	UPROPERTY(BlueprintAssignable,Category = "DIY|PlayerController|Event")
+	FOnNewPawn OnSetPawn;// 设置pawn时调用的委托
 
-
+	virtual void SetPawn(APawn* InPawn) override;
 
 };
