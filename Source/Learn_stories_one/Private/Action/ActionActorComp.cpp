@@ -15,6 +15,10 @@ UActionActorComp::UActionActorComp()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+
+
+
+
 	SetIsReplicatedByDefault(true);
 	// ...
 }
@@ -53,20 +57,38 @@ void UActionActorComp::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	{
 		if (Action)
 		{
+			if (Action->IsRuning())
+			{
+				FColor Color = Action->IsRuning() ? FColor::Red : FColor::White;
+				FString Msg = FString::Printf(TEXT("[%s] = [%p] : Action: %s , IsRuning: %s , Outer: %s = %p"),
+					*GetNameSafe(GetOwner()),
+					GetOwner(),
+					*Action->ActionName.ToString(),
+					(Action->IsRuning() ? TEXT("true") : TEXT("false")),
+					*GetNameSafe(Action->GetOuter()),
+					Action->GetOuter()
+				);
 
+				LogOnScreen(GetOwner(), Msg, Color, 0.0f);
+
+			}
+			else if ( Action->ActionName == L"TextScreen")
+			{
+						FColor Color = Action->IsRuning() ? FColor::Red :FColor::White;
 		
-			FColor Color = Action->IsRuning() ? FColor::Red :FColor::White;
+						FString Msg = FString::Printf(TEXT("[%s] = [%p] : Action: %s , IsRuning: %s , Outer: %s = %p"),
+							*GetNameSafe(GetOwner()),
+							GetOwner(),
+							*Action->ActionName.ToString(),
+							(Action->IsRuning() ? TEXT("true") : TEXT("false")),
+							*GetNameSafe(Action->GetOuter()),
+							Action->GetOuter()
+						);
 		
-			FString Msg = FString::Printf(TEXT("[%s] = [%p] : Action: %s , IsRuning: %s , Outer: %s = %p"),
-				*GetNameSafe(GetOwner()),
-				GetOwner(),
-				*Action->ActionName.ToString(),
-				(Action->IsRuning() ? TEXT("true") : TEXT("false")),
-				*GetNameSafe(Action->GetOuter()),
-				Action->GetOuter()
-			);
+						LogOnScreen(GetOwner(),Msg,Color,0.0f);
+			}
 		
-			LogOnScreen(GetOwner(),Msg,Color,0.0f);
+			
 		}
 	}
 	
@@ -84,6 +106,11 @@ void UActionActorComp::AddAction(AActor* IncitingActor,TSubclassOf<UYAction> InA
 	if (NewAction)
 	{
 		c_Actions.Add(NewAction);
+
+		BindActionFu(NewAction);
+		/*NewAction->OnActionStarted.AddUniqueDynamic(this, &UActionActorComp::OnStartActionFu);
+		NewAction->OnActionStoped.AddUniqueDynamic(this, &UActionActorComp::OnStopActionFu);*/
+		
 		if (NewAction->bStart_Adter_Load)
 		{
 			if(IncitingActor!=nullptr)
@@ -106,6 +133,12 @@ void UActionActorComp::RemvoeAction(FName const InActionName)
 		}
 
 	}
+}
+
+void UActionActorComp::RemvoeAction(UYAction* ReActionObj)
+{
+	
+	c_Actions.RemoveAt( c_Actions.Find(ReActionObj) );
 }
 
 bool UActionActorComp::StartAction(AActor* IncitingActor, FName const InActionName)
@@ -198,6 +231,28 @@ UYAction* UActionActorComp::FindAction(FName const InActionName)
 		}
 	}
 	return nullptr;
+}
+
+
+
+void UActionActorComp::OnStartActionFu_Implementation(UActionActorComp* OwnerActionComp, UYAction* ActionIns)
+{
+
+
+	OnActionCompStarted.Broadcast(OwnerActionComp, ActionIns);
+}
+void UActionActorComp::OnStopActionFu_Implementation(UActionActorComp* OwnerActionComp, UYAction* ActionIns)
+{
+
+	OnActionCompStoped.Broadcast(OwnerActionComp, ActionIns);
+}
+
+
+void UActionActorComp::BindActionFu_Implementation(UYAction* NewAction)
+{
+	NewAction->OnActionStarted.AddUniqueDynamic(this, &UActionActorComp::OnStartActionFu);
+	NewAction->OnActionStoped.AddUniqueDynamic(this, &UActionActorComp::OnStopActionFu);
+
 }
 
 bool UActionActorComp::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)

@@ -5,7 +5,7 @@
 #include"Components\TimelineComponent.h"
 #include"Curves\CurveFloat.h"
 #include <Net/UnrealNetwork.h>
-
+#include"Engine\ActorChannel.h"
 
 // Sets default values
 ATreasureChestsActor::ATreasureChestsActor()
@@ -43,6 +43,7 @@ ATreasureChestsActor::ATreasureChestsActor()
 	OnTimelineFloat.BindDynamic(this, &ATreasureChestsActor::timeLinefunion);
 	//OnTimelineFloat.BindUFunction(this, "timeLinefunion");//这个也可以
 	TimeLineComp->AddInterpFloat(CurveFloat, OnTimelineFloat);//把曲线和调用函数加载入时间轴
+	TimeLineComp->SetIsReplicated(true);
 	
 
 	SetReplicates(true);
@@ -70,7 +71,18 @@ void ATreasureChestsActor::Interactive_Implementation(APawn* InOwPawn)
 
 	
 	bLidOpened = !bLidOpened;
-	OnRep_LidOpened();
+	static bool bOpen = 0;
+	if (!bOpen)
+	{
+		TimeLineComp->Play();//播放时间轴
+		bOpen = 1;
+	}
+	else
+	{
+		TimeLineComp->Reverse();//反向播放
+		bOpen = 0;
+	}
+	//OnRep_LidOpened();
 }
 
 void ATreasureChestsActor::timeLinefunion(float Output)//时间轴调用函数
@@ -85,9 +97,19 @@ void ATreasureChestsActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ATreasureChestsActor, bLidOpened);
-	//DOREPLIFETIME(ATreasureChestsActor, TimeLineComp);
+	DOREPLIFETIME(ATreasureChestsActor, TimeLineComp);
+	DOREPLIFETIME(ATreasureChestsActor, CurveFloat);
+}
+bool ATreasureChestsActor::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
+{
+	bool ret = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+	ret |= Channel->ReplicateSubobject(TimeLineComp, *Bunch, *RepFlags);
+	ret |= Channel->ReplicateSubobject(CurveFloat, *Bunch, *RepFlags);
+	return ret;
 
 }
+
+
 void ATreasureChestsActor::OnRep_LidOpened()
 {
 	//static bool bOpen = 0;
@@ -102,8 +124,8 @@ void ATreasureChestsActor::OnRep_LidOpened()
 	//	bOpen = 0;
 	//}
 
-	bLidOpened ? LidRoll = 90 : LidRoll = 0;
-	StaticMeshCompLid->SetRelativeRotation(FRotator(0,0, LidRoll) );
+	/*bLidOpened ? LidRoll = 90 : LidRoll = 0;
+	StaticMeshCompLid->SetRelativeRotation(FRotator(0,0, LidRoll) );*/
 
 
 }

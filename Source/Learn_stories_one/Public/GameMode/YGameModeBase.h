@@ -41,6 +41,11 @@ protected:
 
 	TMap<APlayerController*, UUserWidget* >  c_ControllerAttWidgetMap;
 
+	UPROPERTY(EditDefaultsOnly,Category = "DIY|GameMode|Save")
+	FString FileName;
+
+
+	class UYSaveGameBase* SaveGameObj;
 
 protected:
 
@@ -50,12 +55,18 @@ protected:
 	void	OnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
 	UFUNCTION()
 	void OnDestroyedSpawnFun(AActor* DestroyedActor);
+
 public:
 	AYGameModeBase();
 	virtual void StartPlay()override;
 
 	virtual void PostInitializeComponents()override;
 
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)override;
+
+	virtual	void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
+
+public:
 	virtual void RebirthRules(APlayerController* RebirthActorPlayerController);//重生规则
 
 	void	AddControllerAttWidget(APlayerController* InPlayerControllerKey, UUserWidget* InWidgetVal);
@@ -63,4 +74,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "DIY|GameMode")
 	UUserWidget* IsControllerAttWidget(APlayerController* InPlayerControllerKey);
 
+
+	UFUNCTION(BlueprintCallable,Category = "DIY|GameMode")
+	void	WriteSaveGame();
+
+	void	LoadSaveGame();
 };

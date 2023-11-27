@@ -9,7 +9,8 @@
 
 #include "ActionActorComp.generated.h"
 
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActionCompStarted, UActionActorComp*, OwnerActionComp, UYAction*, ActionIns);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActionCompStoped, UActionActorComp*, OwnerActionComp, UYAction*, ActionIns);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class LEARN_STORIES_ONE_API UActionActorComp : public UActorComponent
@@ -42,10 +43,20 @@ public:
 	FGameplayTagContainer ActiveGameplayTags;
 
 public:
+
+	UPROPERTY(BlueprintAssignable, Category = "DIY|ActionComp|Event")
+	FOnActionCompStarted OnActionCompStarted; //动作开始 时
+	UPROPERTY(BlueprintAssignable, Category = "DIY|ActionComp|Event")
+	FOnActionCompStoped OnActionCompStoped; //动作停止 时
+
 	UFUNCTION(BlueprintCallable,Category = "DIY|Action")
 	void AddAction(AActor* IncitingActor,TSubclassOf<UYAction> InActionClss);
 	UFUNCTION(BlueprintCallable, Category = "DIY|Action")
 	void RemvoeAction(FName const InActionName);
+
+	//UFUNCTION(BlueprintCallable, Category = "DIY|Action")
+	void RemvoeAction(UYAction * ReActionObj);
+
 	UFUNCTION(BlueprintCallable, Category = "DIY|Action")
 	bool StartAction(AActor* IncitingActor, FName const InActionName);
 	UFUNCTION(BlueprintCallable, Category = "DIY|Action")
@@ -58,6 +69,17 @@ public:
 
 	UYAction* FindAction(FName const InActionName);
 
+/// 动作事件函数
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	void OnStartActionFu(UActionActorComp* OwnerActionComp, UYAction* ActionIns);
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	void OnStopActionFu(UActionActorComp* OwnerActionComp, UYAction* ActionIns);
+
+	UFUNCTION(NetMulticast,Unreliable)
+	void BindActionFu(UYAction* NewAction);
+
+
+	/// </summary>
 
 public:
 

@@ -37,8 +37,8 @@ protected:
 	void Effect(AActor* IncitingActor);//动作效果
 
 public:
-
-
-
+	virtual float GetRemainderRuningTime()const override; //重写 剩余动作时间
+	//virtual float GetStopedTime()const override; //重写 动作结束时间
+	virtual float GetPersistentTime()const override;//重写 动作持续时间
 
 };

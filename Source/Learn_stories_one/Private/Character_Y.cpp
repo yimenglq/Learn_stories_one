@@ -156,13 +156,13 @@ void ACharacter_Y::MoveForward(float Value)
 	 * @param bForce			If true always add the input, ignoring the result of IsMoveInputIgnored().
 	 * 如果为 true，则始终添加输入，忽略 IsMoveInputIgnored（） 的结果。
 	 */
-	AddMovementInput(FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::X), Value);
+	AddMovementInput(FRotationMatrix(FRotator(0.0f, Controller->GetControlRotation().Yaw, 0.0f)).GetScaledAxis(EAxis::X), Value);
 
 	//AddMovementInput(GetActorForwardVector(), Value);
 }
 void ACharacter_Y::MoveRight(float Value)
 {
-	AddMovementInput(FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::Y), Value);
+	AddMovementInput(FRotationMatrix(FRotator( 0.0f,Controller->GetControlRotation().Yaw,0.0f)).GetScaledAxis(EAxis::Y), Value);
 
 	//AddMovementInput(GetActorRightVector(), Value);
 }
@@ -256,6 +256,7 @@ void ACharacter_Y::BlackHole()
 void ACharacter_Y::Interactive()
 {
 	Server_Interactive();
+	
 
 }
 
@@ -308,6 +309,13 @@ void ACharacter_Y::OnBldVeChanged(AActor* Actor, UAttributeActorComponent* Attri
 			//GetMovementComponent()->StopMovementImmediately();
 		}
 	}
+	else
+	{
+
+		if(AttributeActorComp->GetBlood_volume() <= 0)
+			AttributeActorComp->SetBloodVolume(Newblood_volume);
+	}
+	
 
 }
 

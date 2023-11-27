@@ -42,12 +42,9 @@ void UAI_UserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 		GetOwningPlayerPawn();
 		c_Bloodimg->GetDynamicMaterial()->SetScalarParameterValue(c_ScalarParameterValue.ParameterName, c_ScalarParameterValue.Value);
 	}
-	//UWidgetLayoutLibrary::GetViewportWidgetGeometry(GetWorld());
+	UWidgetLayoutLibrary::GetViewportWidgetGeometry(GetWorld());
 
 
 }
 
-//FReply UAI_UserWidget::NativeOnMouseWheel(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
-//{
-//	return FReply();
-//}
+

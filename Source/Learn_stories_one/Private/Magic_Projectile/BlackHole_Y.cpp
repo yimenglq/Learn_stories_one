@@ -28,7 +28,7 @@ void ABlackHole_Y::BeginPlay()
 	Super::BeginPlay();
 	if (LaunchSound)
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), LaunchSound, GetActorLocation(), (LaunchSound->GetVolumeMultiplier()), (LaunchSound->GetPitchMultiplier()),
-			0.0f, (USoundAttenuation*)LaunchSound->AttenuationSettings, (USoundConcurrency*)LaunchSound->SoundConcurrencySettings_DEPRECATED); //播放发射声音
+			0.0f, (USoundAttenuation*)LaunchSound->AttenuationSettings, (LaunchSound->ConcurrencySet.Num() > 0 ? (USoundConcurrency*)*LaunchSound->ConcurrencySet.begin() : nullptr)); //播放发射声音
 }
 
 

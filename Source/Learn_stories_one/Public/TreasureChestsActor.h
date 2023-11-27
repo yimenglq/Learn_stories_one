@@ -39,12 +39,12 @@ protected:
 	UPROPERTY(VisibleAnywhere,Replicated)
 	class UTimelineComponent* TimeLineComp;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere,RepLicated)
 	UCurveFloat* CurveFloat;
 
 	
 
-	UPROPERTY(ReplicatedUsing = "OnRep_LidOpened", BlueprintReadOnly)
+	UPROPERTY(ReplicatedUsing = "OnRep_LidOpened", BlueprintReadOnly,SaveGame)
 	bool bLidOpened;//´ò¿ª¸Ç×Ó
 	
 	UFUNCTION()
@@ -58,4 +58,6 @@ public:
 	void timeLinefunion(float Output);
 
 	virtual	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual bool ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
+
 };

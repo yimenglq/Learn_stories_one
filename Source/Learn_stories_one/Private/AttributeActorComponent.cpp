@@ -52,6 +52,21 @@ void UAttributeActorComponent::MulticastBoloodChanged_Implementation(AActor* Ins
 	OnBlood_volume_Changed.Broadcast(InstigatorActor, this, NewBlood, Delta);
 }
 
+void UAttributeActorComponent::ServerBloodChanged_Implementation(AActor* InstigatorActor, float NewBlood, float Delta)
+{
+	GEngine->AddOnScreenDebugMessage(0, 100.0f, FColor::Red, TEXT(" UAttributeActorComponent::ServerValidate_Implementation"));
+	if (auto * comp = Cast<UAttributeActorComponent>(InstigatorActor->GetComponentByClass(UAttributeActorComponent::StaticClass())))
+	{	
+		if (comp->blood_volume != 0)
+		{
+			
+			comp->MulticastBoloodChanged(InstigatorActor, comp->blood_volume, 0);
+		}
+
+	}
+		
+}
+
 void UAttributeActorComponent::ReviseBlood_volume(int InVal)
 {
 	if (blood_volume <= 0)
@@ -59,8 +74,21 @@ void UAttributeActorComponent::ReviseBlood_volume(int InVal)
 		blood_volume += InVal;
 		blood_volume > Maxblood ? blood_volume = Maxblood : NULL;
 		//OnBlood_volume_Changed.Broadcast(GetOwner(),this, blood_volume, InVal);
+	if(!GetOwner()->HasAuthority())
+		if (blood_volume <= 0)
+		{
+		   Cast<UAttributeActorComponent>( GetWorld()->GetFirstLocalPlayerFromController()->PlayerController\
+			   ->GetPawn()->GetComponentByClass( UAttributeActorComponent::StaticClass() ) )\
+			   -> ServerBloodChanged(GetOwner(), blood_volume, InVal );
+			return;
+		}
+		
 		MulticastBoloodChanged(GetOwner(), blood_volume, InVal);
+		
+		
 }
+
+
 
 
 
@@ -87,6 +115,12 @@ void UAttributeActorComponent::GetBlood_volume(int& OutVal)
 {
 	OutVal = blood_volume;
 	
+}
+
+void UAttributeActorComponent::SetBloodVolume(int InBloodVal)
+{
+	blood_volume = InBloodVal;
+
 }
 
 bool UAttributeActorComponent::IsAlive()

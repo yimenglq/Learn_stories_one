@@ -11,14 +11,21 @@ void UYAction::StartAction_Implementation(AActor* IncitingActor)
 	if (IsRuning())
 			return;
 	UE_LOG(LogTemp, Log, TEXT("UYAction::StartAction_Implementation"), *GetNameSafe(this));
+	
+
+	
 	UActionActorComp* comp = GetActionActorComp();
+	if(comp->GetOwnerRole() == ENetRole::ROLE_Authority)
+		StartTime = GetWorld()->TimeSeconds;
+
 	comp->ActiveGameplayTags.AppendTags(GrantsTags);
 	bIsRuning = true;
+	OnActionStarted.Broadcast(GetActionActorComp(), this);
 	if (comp->GetOwner()->HasAuthority())
 	{
-		if (c_IncitingActor != IncitingActor)
-			c_IncitingActor = IncitingActor;
-		bIsRuningServer = true;
+		if (RepParm.IncitingActor != IncitingActor)
+			RepParm.IncitingActor = IncitingActor;
+		RepParm.bIsRuningServer = true;
 	}
 }
 
@@ -26,17 +33,22 @@ void UYAction::StopAction_Implementation(AActor* IncitingActor)
 {
 	
 	UE_LOG(LogTemp, Log, TEXT("UYAction::StopAction_Implementation"), *GetNameSafe(this));
-	ensureAlways(bIsRuning);
-
+	/*ensureAlways(bIsRuning);*/
+	if (!IsRuning())
+		return;
+	
 	UActionActorComp* comp = GetActionActorComp();
+	if (comp->GetOwnerRole() == ENetRole::ROLE_Authority)
+		StartTime = 0.0f;
 	comp->ActiveGameplayTags.RemoveTags(GrantsTags);
 	bIsRuning = false;
+	OnActionStoped.Broadcast(GetActionActorComp(), this);
 	//·þÎñÆ÷
 	if (comp->GetOwner()->HasAuthority())
 	{
-		if (c_IncitingActor != IncitingActor)
-			c_IncitingActor = IncitingActor;
-		bIsRuningServer = false;
+		if (RepParm.IncitingActor != IncitingActor)
+			RepParm.IncitingActor = IncitingActor;
+		RepParm.bIsRuningServer = false;
 	}
 }
 
@@ -79,7 +91,9 @@ bool UYAction::IsRuning() const
 	return bIsRuning;
 }
 
-UWorld* UYAction::GetWorld()
+
+
+UWorld* UYAction::GetWorld() const
 {
 		auto*  ActionWorld = Cast<UActorComponent>(GetOuter());
 	if(ActionWorld)
@@ -102,24 +116,24 @@ UWorld* UYAction::GetWorld()
 
 
 
- void UYAction::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+void UYAction::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
-	 Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-
-	 DOREPLIFETIME(UYAction, bIsRuningServer);
-	 DOREPLIFETIME(UYAction, c_IncitingActor);
+	DOREPLIFETIME(UYAction,StartTime);
+	DOREPLIFETIME(UYAction, RepParm);
+	//DOREPLIFETIME_CONDITION(UYAction, RepParm, );
 }
 
 void UYAction::OnRep_IsRuning()
 {
-	if (bIsRuningServer)
+	if (RepParm.bIsRuningServer)
 	{
-		StartAction(c_IncitingActor);
+		StartAction(RepParm.IncitingActor);
 	}
 	else
 	{
-		StopAction(c_IncitingActor);
+		StopAction(RepParm.IncitingActor);
 	}
 
 

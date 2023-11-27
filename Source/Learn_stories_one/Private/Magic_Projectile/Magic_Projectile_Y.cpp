@@ -58,7 +58,7 @@ void AMagic_Projectile_Y::BeginPlay()
 	Super::BeginPlay();
 	if(LaunchSound)
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), LaunchSound, GetActorLocation(), (LaunchSound->GetVolumeMultiplier()), (LaunchSound->GetPitchMultiplier()),
-		0.0f, (USoundAttenuation*)LaunchSound->AttenuationSettings, (USoundConcurrency*)LaunchSound->SoundConcurrencySettings_DEPRECATED); //²¥·Å·¢ÉäÉùÒô
+		0.0f, (USoundAttenuation*)LaunchSound->AttenuationSettings, (LaunchSound->ConcurrencySet.Num() > 0 ? (USoundConcurrency*)*LaunchSound->ConcurrencySet.begin(): nullptr)); //²¥·Å·¢ÉäÉùÒô
 }
 
 
@@ -179,6 +179,7 @@ void AMagic_Projectile_Y::OnCompHit(UPrimitiveComponent* HitComponent, AActor* O
 			Character->GetActionActorComp()->AddAction(OtherActor, ActionEffect);
 		}
 		
+		
 
 	}
 	else
@@ -216,7 +217,7 @@ void AMagic_Projectile_Y::Destroy()
 	{
 		//FVector locn = 	GetActorLocation();
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), CollidingSound, HitPoint,CollidingSound->GetVolumeMultiplier(),CollidingSound->GetPitchMultiplier(),
-			0.0f,CollidingSound->AttenuationSettings,CollidingSound->SoundConcurrencySettings_DEPRECATED);
+			0.0f,CollidingSound->AttenuationSettings, (CollidingSound->ConcurrencySet.Num() > 0 ? *CollidingSound->ConcurrencySet.begin() :nullptr ) );
 		DrawDebugString(GetWorld(), HitPoint, FString::Printf(TEXT("AMagic_Projectile_Y::UGameplayStatics::PlaySoundAtLocation")), nullptr, FColor::Red, 5.0f, true);
 		//UGameplayStatics::PlaySoundAtLocation(GetWorld(), CollidingSound, HitPoint);
 	}

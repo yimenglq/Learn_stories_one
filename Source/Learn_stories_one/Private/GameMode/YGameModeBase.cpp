@@ -3,7 +3,13 @@
 
 #include "GameMode/YGameModeBase.h"
 #include <EnvironmentQuery/EnvQueryManager.h>
-
+#include <Kismet/GameplayStatics.h>
+#include"SaveGame\YSaveGameBase.h"
+#include"GameFramework\GameStateBase.h"
+#include <PlayerState/YPlayerState.h>
+#include <EngineUtils.h>
+#include <Interactive_Interface.h>
+#include <Serialization/ObjectAndNameAsStringProxyArchive.h>
 
 
 static TAutoConsoleVariable<bool> ConsoleVariable(TEXT("su.Spawn"), true, TEXT("spawn , Timer"), ECVF_Cheat);//控制台变量定义
@@ -21,6 +27,14 @@ AYGameModeBase::AYGameModeBase():Super()
 
 }
 
+void AYGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+	Super::InitGame(MapName, Options, ErrorMessage);
+	LoadSaveGame();
+}
+
+
+
 void AYGameModeBase::StartPlay()
 {
 	Super::StartPlay();
@@ -36,6 +50,17 @@ void AYGameModeBase::PostInitializeComponents()
 
 }
 
+void AYGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
+{
+	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
+
+		AYPlayerState* PlayerState = Cast< AYPlayerState>(NewPlayer);
+		if (PlayerState)
+		{
+			PlayerState->LoadPlayerState(SaveGameObj);
+		}
+
+}
 
 
 
@@ -143,4 +168,104 @@ UUserWidget* AYGameModeBase::IsControllerAttWidget(APlayerController* InPlayerCo
 	ret = c_ControllerAttWidgetMap.Find(InPlayerControllerKey);
 
 	return (ret != nullptr ? *ret: nullptr);
+}
+
+
+
+
+void AYGameModeBase::WriteSaveGame()
+{
+	SaveGameObj->SaveDates.Empty();
+	for (int i = 0; i < GameState->PlayerArray.Num(); i++)
+	{
+		AYPlayerState* PlayerState = Cast< AYPlayerState>(  GameState->PlayerArray[i]);
+		if (PlayerState)
+		{
+			PlayerState->SavePlayerState(SaveGameObj);
+		}
+
+	}
+
+	for  (FActorIterator It(GetWorld());It ; ++It )
+	{
+		AActor* Actor = *It;
+		if (!Actor->Implements<UInteractive_Interface>())
+		{
+			continue;
+		}
+
+
+		FSaveDate Date;
+		Date.Name = Actor->GetName();
+		Date.Transform = Actor->GetActorTransform();
+		
+
+		FMemoryWriter MemWriter(Date.ByteDate);
+		FObjectAndNameAsStringProxyArchive Ar(MemWriter, true);
+		Ar.ArIsSaveGame = true;
+
+		Actor->Serialize(Ar);
+
+		SaveGameObj->SaveDates.Add(Date);
+
+
+
+	}
+
+
+	UGameplayStatics::SaveGameToSlot(SaveGameObj, FileName, 0);
+
+}
+
+void AYGameModeBase::LoadSaveGame()
+{
+	if (UGameplayStatics::DoesSaveGameExist(FileName, 0))
+	{
+		SaveGameObj =  Cast<UYSaveGameBase>	(UGameplayStatics::LoadGameFromSlot(FileName, 0));
+		if (SaveGameObj == nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("erro Load SaveGame Data."));
+			return;
+		}
+		
+		UE_LOG(LogTemp, Log, TEXT("Loaded SaveGame Data."));
+		
+		for (FActorIterator It(GetWorld()); It; ++It)
+		{
+			AActor* Actor = *It;
+			if (!Actor->Implements<UInteractive_Interface>())
+			{
+				continue;
+			}
+			for (auto LoadDate : SaveGameObj->SaveDates )
+			{
+				if (LoadDate.Name == Actor->GetName())
+				{
+					Actor->SetActorTransform(LoadDate.Transform);
+
+
+
+					FMemoryReader MemReader(LoadDate.ByteDate);
+					FObjectAndNameAsStringProxyArchive Ar(MemReader, true);
+					Ar.ArIsSaveGame = true;
+
+					Actor->Serialize(Ar);
+
+					break;
+				}
+
+
+			}
+
+			
+
+		}
+
+	
+	}
+	else
+	{
+		SaveGameObj = Cast<UYSaveGameBase> (UGameplayStatics::CreateSaveGameObject( UYSaveGameBase::StaticClass() ));
+		UE_LOG(LogTemp, Log, TEXT("Created New SaveGame Data."));
+	}
 }

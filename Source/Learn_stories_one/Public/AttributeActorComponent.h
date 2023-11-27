@@ -43,6 +43,9 @@ protected:
 	UFUNCTION(NetMulticast,Unreliable)
 	void MulticastBoloodChanged(AActor* InstigatorActor, float NewBlood , float Delta );
 
+	UFUNCTION(Server,Reliable)
+	void ServerBloodChanged(AActor* InstigatorActor, float NewBlood, float Delta);
+
 public:
 	UFUNCTION(BlueprintCallable,Category = "DIY|Attribute", meta = (GetAttributeActorComp))
 	static UAttributeActorComponent* GetAttributeActorComponent(AActor* InActor);
@@ -57,6 +60,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "DIY|Attribute")//给蓝图使用 函数
 	int GetBlood_volume();
 	void	GetBlood_volume(int& OutVal);
+	void SetBloodVolume(int InBloodVal);
+
 	
 	UFUNCTION(BlueprintCallable, Category = "DIY|Attribute")
 	bool IsAlive();//是否存活 当前血量是否大于零
